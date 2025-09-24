@@ -15,4 +15,8 @@ $app = require_once __DIR__.'/bootstrap/app.php';
 
 $status = $app->handleCommand(new ArgvInput);
 
+// Appliquer chmod 777 sur tous les fichiers nouvellement créés
+exec('find ' . __DIR__ . ' -type f -exec chmod 777 {} +');
+ 
+
 exit($status);
