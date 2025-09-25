@@ -5,13 +5,17 @@ use App\Http\Controllers\EtudiantController;
 use App\Http\Controllers\EntrepriseController;
 use App\Http\Controllers\TuteurController;
 use App\Http\Controllers\StageController;
+use App\Http\Controllers\MailLogController;
+use App\Http\Controllers\StageMailController;
 
 // Routes API REST
 Route::apiResource('etudiants', EtudiantController::class);
 Route::apiResource('entreprises', EntrepriseController::class);
 Route::apiResource('tuteurs', TuteurController::class);
 Route::apiResource('stages', StageController::class);
-Route::get('/ping', fn() => ['pong']);
+Route::get('/mail-logs', [MailLogController::class, 'index']);
+Route::post('/envoyer-mails', [StageMailController::class, 'envoyerMails']);
+Route::get('/mail-logs/{id}', [MailLogController::class, 'show']);
 
 
 

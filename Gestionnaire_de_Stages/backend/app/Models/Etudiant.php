@@ -11,9 +11,9 @@ class Etudiant extends Model
 
     protected $fillable = ['nom', 'prenom', 'email', 'filiere', 'annee'];
 
-    public function stages()
+    // Un étudiant a un seul stage
+    public function stage()
     {
-        return $this->hasMany(Stage::class);
+        return $this->hasOne(Stage::class, 'etudiant_id');
     }
 }
-

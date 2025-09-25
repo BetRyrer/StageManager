@@ -13,11 +13,11 @@ class Entreprise extends Model
 
     public function stages()
     {
-        return $this->hasMany(Stage::class);
+        return $this->hasMany(Stage::class, 'entreprise_id');
     }
 
     public function tuteurs()
     {
-        return $this->hasMany(Tuteur::class);
+        return $this->hasMany(Tuteur::class, 'entreprise_id');
     }
 }

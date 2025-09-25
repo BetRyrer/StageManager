@@ -9,20 +9,28 @@ class Stage extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['titre', 'description', 'date_debut', 'date_fin', 'entreprise_id', 'etudiant_id', 'tuteur_id'];
+    protected $fillable = [
+        'titre',
+        'description',
+        'date_debut',
+        'date_fin',
+        'entreprise_id',
+        'etudiant_id',
+        'tuteur_id'
+    ];
 
     public function etudiant()
     {
-        return $this->belongsTo(Etudiant::class);
-    }
-
-    public function entreprise()
-    {
-        return $this->belongsTo(Entreprise::class);
+        return $this->belongsTo(Etudiant::class, 'etudiant_id');
     }
 
     public function tuteur()
     {
-        return $this->belongsTo(Tuteur::class);
+        return $this->belongsTo(Tuteur::class, 'tuteur_id');
+    }
+
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class, 'entreprise_id');
     }
 }
