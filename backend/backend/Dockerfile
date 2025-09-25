@@ -1,7 +1,8 @@
-FROM php:8.2-cli
+FROM php:8.2-fpm
 
 # Installer dépendances système
-RUN apt-get update && apt-get install -y unzip git curl libzip-dev libxml2-dev \
+RUN apt-get update && apt-get install -y \
+    unzip git curl libzip-dev libxml2-dev \
     && docker-php-ext-install pdo pdo_mysql zip dom
 
 # Installer Composer
@@ -18,8 +19,5 @@ RUN composer install --no-dev --optimize-autoloader || true
 # Donner les permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-# Générer une clé Laravel
-RUN php artisan key:generate || true
-
-# Lancer Laravel
+# Lancer Laravel (serveur PHP intégré pour dev)
 CMD php artisan serve --host=0.0.0.0 --port=8000

@@ -1,0 +1,715 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Gestion des Stages",
+        "description": "Documentation de l'API Laravel pour gérer les étudiants, entreprises, tuteurs et stages.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Serveur local Laravel"
+        }
+    ],
+    "paths": {
+        "/api/entreprises": {
+            "get": {
+                "tags": [
+                    "Entreprises"
+                ],
+                "summary": "Lister toutes les entreprises",
+                "operationId": "712e9c332f3e4993d72988da80bea620",
+                "responses": {
+                    "200": {
+                        "description": "Liste des entreprises récupérée avec succès"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Entreprises"
+                ],
+                "summary": "Créer une entreprise",
+                "operationId": "b9931edbf7734e3005034bc1f8c4d938",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nom",
+                                    "ville"
+                                ],
+                                "properties": {
+                                    "nom": {
+                                        "type": "string",
+                                        "example": "BigBen Connected"
+                                    },
+                                    "secteur": {
+                                        "type": "string",
+                                        "example": "Technologie"
+                                    },
+                                    "adresse": {
+                                        "type": "string",
+                                        "example": "123 Rue de Paris"
+                                    },
+                                    "ville": {
+                                        "type": "string",
+                                        "example": "Fontainebleau"
+                                    },
+                                    "site_web": {
+                                        "type": "string",
+                                        "example": "https://www.bigben.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Entreprise créée avec succès"
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        },
+        "/api/entreprises/{id}": {
+            "get": {
+                "tags": [
+                    "Entreprises"
+                ],
+                "summary": "Récupérer une entreprise par ID",
+                "operationId": "750bb8cbb174ff0a9ca9b20324af5a45",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de l'entreprise",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Entreprise trouvée"
+                    },
+                    "404": {
+                        "description": "Entreprise non trouvée"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Entreprises"
+                ],
+                "summary": "Mettre à jour une entreprise",
+                "operationId": "0efcf6f42950723824f2078295a4a839",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de l'entreprise",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nom": {
+                                        "type": "string",
+                                        "example": "Nouvelle Entreprise"
+                                    },
+                                    "secteur": {
+                                        "type": "string",
+                                        "example": "Informatique"
+                                    },
+                                    "adresse": {
+                                        "type": "string",
+                                        "example": "456 Avenue de Lyon"
+                                    },
+                                    "ville": {
+                                        "type": "string",
+                                        "example": "Paris"
+                                    },
+                                    "site_web": {
+                                        "type": "string",
+                                        "example": "https://www.example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Entreprise mise à jour avec succès"
+                    },
+                    "404": {
+                        "description": "Entreprise non trouvée"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Entreprises"
+                ],
+                "summary": "Supprimer une entreprise",
+                "operationId": "b8cde643f92887037e22ba472f77b539",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de l'entreprise",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Entreprise supprimée avec succès"
+                    },
+                    "404": {
+                        "description": "Entreprise non trouvée"
+                    }
+                }
+            }
+        },
+        "/api/etudiants": {
+            "get": {
+                "tags": [
+                    "Etudiants"
+                ],
+                "summary": "Liste tous les étudiants",
+                "operationId": "5f59d4136a8408d473871dd26a11e14f",
+                "responses": {
+                    "200": {
+                        "description": "Liste des étudiants"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Etudiants"
+                ],
+                "summary": "Créer un étudiant",
+                "operationId": "9225258868826863b992d8cf7fbbd321",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nom",
+                                    "prenom",
+                                    "email",
+                                    "filiere",
+                                    "annee"
+                                ],
+                                "properties": {
+                                    "nom": {
+                                        "type": "string",
+                                        "example": "Dupont"
+                                    },
+                                    "prenom": {
+                                        "type": "string",
+                                        "example": "Jean"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "jean.dupont@example.com"
+                                    },
+                                    "filiere": {
+                                        "type": "string",
+                                        "example": "Informatique"
+                                    },
+                                    "annee": {
+                                        "type": "string",
+                                        "example": "BUT2"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Étudiant créé avec succès"
+                    }
+                }
+            }
+        },
+        "/api/etudiants/{id}": {
+            "get": {
+                "tags": [
+                    "Etudiants"
+                ],
+                "summary": "Afficher un étudiant",
+                "operationId": "11c86205056e6f6be93c75a598f41db2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de l'étudiant",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Étudiant trouvé"
+                    },
+                    "404": {
+                        "description": "Étudiant non trouvé"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Etudiants"
+                ],
+                "summary": "Mettre à jour un étudiant",
+                "operationId": "3d3f44ea1d553ed75223eb201570aec5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de l'étudiant",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nom": {
+                                        "type": "string",
+                                        "example": "Durand"
+                                    },
+                                    "prenom": {
+                                        "type": "string",
+                                        "example": "Paul"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "paul.durand@example.com"
+                                    },
+                                    "filiere": {
+                                        "type": "string",
+                                        "example": "Maths"
+                                    },
+                                    "annee": {
+                                        "type": "string",
+                                        "example": "BUT3"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Étudiant mis à jour"
+                    },
+                    "404": {
+                        "description": "Étudiant non trouvé"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Etudiants"
+                ],
+                "summary": "Supprimer un étudiant",
+                "operationId": "bd30c8a200abb3c966b165a599da1e7a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de l'étudiant",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Étudiant supprimé"
+                    },
+                    "404": {
+                        "description": "Étudiant non trouvé"
+                    }
+                }
+            }
+        },
+        "/api/stages": {
+            "get": {
+                "tags": [
+                    "Stages"
+                ],
+                "summary": "Lister tous les stages",
+                "operationId": "4a71a481dae26ac7e98452b8e8e21a21",
+                "responses": {
+                    "200": {
+                        "description": "Liste des stages récupérée avec succès"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Stages"
+                ],
+                "summary": "Créer un stage",
+                "operationId": "a0024aa23b7815d069ab7feaa4c2168f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "titre",
+                                    "description",
+                                    "date_debut",
+                                    "entreprise_id",
+                                    "etudiant_id"
+                                ],
+                                "properties": {
+                                    "titre": {
+                                        "type": "string",
+                                        "example": "Développement d’une application web"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Stage de 2 mois en développement fullstack avec Laravel et React."
+                                    },
+                                    "date_debut": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-06-01"
+                                    },
+                                    "date_fin": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-08-01"
+                                    },
+                                    "entreprise_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "etudiant_id": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "tuteur_id": {
+                                        "type": "integer",
+                                        "example": 3,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Stage créé avec succès"
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        },
+        "/api/stages/{id}": {
+            "get": {
+                "tags": [
+                    "Stages"
+                ],
+                "summary": "Récupérer un stage par ID",
+                "operationId": "b142b1e896d866f898e485a74b771690",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID du stage",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Stage trouvé"
+                    },
+                    "404": {
+                        "description": "Stage non trouvé"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Stages"
+                ],
+                "summary": "Mettre à jour un stage",
+                "operationId": "621d38556134c86662d857d345205e30",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID du stage",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "titre": {
+                                        "type": "string",
+                                        "example": "Nouveau titre"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Mise à jour de la description"
+                                    },
+                                    "date_debut": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-01"
+                                    },
+                                    "date_fin": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-09-01"
+                                    },
+                                    "entreprise_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "etudiant_id": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "tuteur_id": {
+                                        "type": "integer",
+                                        "example": 3,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Stage mis à jour avec succès"
+                    },
+                    "404": {
+                        "description": "Stage non trouvé"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Stages"
+                ],
+                "summary": "Supprimer un stage",
+                "operationId": "1cad54d0023c1aa78f8518fd8bde8b39",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID du stage",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Stage supprimé avec succès"
+                    },
+                    "404": {
+                        "description": "Stage non trouvé"
+                    }
+                }
+            }
+        },
+        "/api/tuteurs": {
+            "post": {
+                "tags": [
+                    "Tuteurs"
+                ],
+                "summary": "Créer un tuteur",
+                "operationId": "499de773ff760b8f91a3635997dce025",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nom",
+                                    "prenom",
+                                    "email",
+                                    "type"
+                                ],
+                                "properties": {
+                                    "nom": {
+                                        "type": "string",
+                                        "example": "Martin"
+                                    },
+                                    "prenom": {
+                                        "type": "string",
+                                        "example": "Pierre"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "pierre.martin@example.com"
+                                    },
+                                    "telephone": {
+                                        "type": "string",
+                                        "example": "+33 6 12 34 56 78"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "ecole",
+                                            "entreprise"
+                                        ],
+                                        "example": "entreprise"
+                                    },
+                                    "entreprise_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 2,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tuteur créé avec succès"
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        },
+        "/api/tuteurs/{id}": {
+            "put": {
+                "tags": [
+                    "Tuteurs"
+                ],
+                "summary": "Mettre à jour un tuteur",
+                "operationId": "82a6335db3d21d48294a2531b3878b17",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nom": {
+                                        "type": "string",
+                                        "example": "Martin"
+                                    },
+                                    "prenom": {
+                                        "type": "string",
+                                        "example": "Pierre"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "pierre.martin@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Tuteur mis à jour"
+                    },
+                    "404": {
+                        "description": "Tuteur non trouvé"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Entreprises",
+            "description": "Entreprises"
+        },
+        {
+            "name": "Etudiants",
+            "description": "Etudiants"
+        },
+        {
+            "name": "Stages",
+            "description": "Stages"
+        },
+        {
+            "name": "Tuteurs",
+            "description": "Tuteurs"
+        }
+    ]
+}
