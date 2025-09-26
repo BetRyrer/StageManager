@@ -9,7 +9,7 @@ class Etudiant extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom', 'prenom', 'email', 'filiere', 'annee'];
+    protected $fillable = ['nom', 'prenom', 'email', 'tel', 'regime'];
 
     // Un étudiant a un seul stage
     public function stage()

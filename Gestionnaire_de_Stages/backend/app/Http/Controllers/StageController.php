@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Stage;
 use Illuminate\Http\Request;
+use App\Imports\StagesImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StageController extends Controller
 {
@@ -159,5 +161,45 @@ class StageController extends Controller
     {
         $stage->delete();
         return response()->noContent();
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/stages/import",
+     *     summary="Importer des stages depuis un fichier CSV",
+     *     tags={"Stages"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="fichier",
+     *                     type="string",
+     *                     format="binary",
+     *                     description="Fichier CSV à importer"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Importation réussie"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Erreur de validation"
+     *     )
+     * )
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'fichier' => 'required|mimes:csv,txt'
+        ]);
+
+        Excel::import(new StagesImport, $request->file('fichier'));
+
+        return response()->json(['message' => 'Importation réussie'], 200);
     }
 }

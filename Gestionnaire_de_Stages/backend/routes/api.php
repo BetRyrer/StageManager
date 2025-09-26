@@ -13,6 +13,7 @@ Route::apiResource('etudiants', EtudiantController::class);
 Route::apiResource('entreprises', EntrepriseController::class);
 Route::apiResource('tuteurs', TuteurController::class);
 Route::apiResource('stages', StageController::class);
+Route::post('/stages/import', [StageController::class, 'import']);
 Route::get('/mail-logs', [MailLogController::class, 'index']);
 Route::post('/envoyer-mails', [StageMailController::class, 'envoyerMails']);
 Route::get('/mail-logs/{id}', [MailLogController::class, 'show']);

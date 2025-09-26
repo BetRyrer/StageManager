@@ -9,7 +9,15 @@ class Entreprise extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom', 'secteur', 'adresse', 'ville', 'site_web'];
+    protected $fillable = [
+        'siret',
+        'raison_sociale',
+        'adresse',
+        'adresse2',
+        'code_postal',
+        'ville',
+        'pays',
+    ];
 
     public function stages()
     {
