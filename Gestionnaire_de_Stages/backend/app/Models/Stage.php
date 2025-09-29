@@ -10,15 +10,37 @@ class Stage extends Model
     use HasFactory;
 
     protected $fillable = [
-        'titre',
-        'description',
+        'etudiant_id',
+        'entreprise_id',
+        'tuteur_id',
         'date_debut',
         'date_fin',
-        'entreprise_id',
-        'etudiant_id',
-        'tuteur_id'
+        'interruption',
+        'date_debut_interruption',
+        'date_fin_interruption',
+        'thematique',
+        'sujet',
+        'fonctions_taches',
+        'detail_projet',
+        'duree_stage',
+        'nb_jours_travail',
+        'nb_heures_hebdo',
+        'gratification',
+        'unite_gratification',
+        'validation_administrative',
+        'validation_pedagogique',
+        'avenants',
+        'date_creation_convention',
+        'date_modification_convention',
+        'annee_universitaire',
+        'type_convention',
+        'commentaire_stage',
+        'commentaire_duree_travail',
+        'code_elp',
+        'element_pedagogique',
     ];
 
+    // Relations
     public function etudiant()
     {
         return $this->belongsTo(Etudiant::class, 'etudiant_id');

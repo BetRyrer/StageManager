@@ -9,20 +9,22 @@ class Tuteur extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom', 'prenom', 'email', 'telephone', 'type', 'entreprise_id', 'user_id'];
-
-    public function stages()
-    {
-        return $this->hasMany(Stage::class, 'tuteur_id');
-    }
+    protected $fillable = [
+        'nom',
+        'prenom',
+        'email',
+        'telephone',
+        'fonction',
+        'entreprise_id',
+    ];
 
     public function entreprise()
     {
         return $this->belongsTo(Entreprise::class, 'entreprise_id');
     }
 
-    public function user()
+    public function stages()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->hasMany(Stage::class, 'tuteur_id');
     }
 }

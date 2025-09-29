@@ -10,9 +10,15 @@ return new class extends Migration
     {
         Schema::create('tuteurs', function (Blueprint $table) {
             $table->id();
-            $table->string('nom');
-            $table->string('email')->unique();
-            $table->string('tel1')->nullable();
+            $table->string('nom')->nullable();
+            $table->string('prenom')->nullable();
+            $table->string('email')->nullable();
+            $table->string('telephone')->nullable();
+            $table->string('fonction')->nullable();
+
+            // relation avec l’entreprise
+            $table->foreignId('entreprise_id')->constrained('entreprises')->onDelete('cascade');
+
             $table->timestamps();
         });
     }

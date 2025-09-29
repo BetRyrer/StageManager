@@ -10,15 +10,27 @@ class Entreprise extends Model
     use HasFactory;
 
     protected $fillable = [
+        'nom',
         'siret',
-        'raison_sociale',
         'adresse',
-        'adresse2',
         'code_postal',
-        'ville',
+        'commune',
         'pays',
+        'statut_juridique',
+        'type_structure',
+        'effectif',
+        'code_naf',
+        'telephone',
+        'mail',
+        'site_web',
+        'service_nom',
+        'service_adresse',
+        'service_code_postal',
+        'service_commune',
+        'service_pays',
     ];
 
+    // Relations
     public function stages()
     {
         return $this->hasMany(Stage::class, 'entreprise_id');
