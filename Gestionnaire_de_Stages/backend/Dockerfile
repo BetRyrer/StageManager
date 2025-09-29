@@ -11,11 +11,15 @@ COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copier tout le projet
+# Étape 1 : dépendances PHP
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction || true
+
+# Étape 2 : copier le reste du projet
 COPY . .
 
-# Installer les dépendances Laravel
-RUN composer install --no-dev --optimize-autoloader || true
+# Refaire les scripts post-install (après avoir copié le code)
+RUN composer dump-autoload --optimize
 
 # Donner les permissions
 RUN chmod -R 775 storage bootstrap/cache

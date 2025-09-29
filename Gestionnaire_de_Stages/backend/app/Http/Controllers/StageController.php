@@ -14,15 +14,32 @@ class StageController extends Controller
      *     path="/api/stages",
      *     summary="Lister tous les stages",
      *     tags={"Stages"},
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         required=false,
+     *         description="Filtrer par statut (a_venir, en_cours, terminé)",
+     *         @OA\Schema(type="string", example="en_cours")
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Liste des stages récupérée avec succès"
      *     )
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Stage::with(['etudiant', 'entreprise', 'tuteur'])->get();
+        $statusFilter = $request->query('status'); 
+
+        $stages = Stage::with(['etudiant', 'entreprise', 'tuteur'])->get();
+
+        if ($statusFilter) {
+            $stages = $stages->filter(function ($stage) use ($statusFilter) {
+                return $stage->status === $statusFilter;
+            })->values(); 
+        }
+
+        return $stages;
     }
 
     /**
@@ -131,8 +148,55 @@ class StageController extends Controller
      */
     public function update(Request $request, Stage $stage)
     {
-        $stage->update($request->all());
+        $validated = $request->validate([
+            'titre' => 'sometimes|string|max:255',
+            'description' => 'sometimes|string',
+            'date_debut' => 'sometimes|date',
+            'date_fin' => 'nullable|date',
+            'entreprise_id' => 'sometimes|exists:entreprises,id',
+            'etudiant_id' => 'sometimes|exists:etudiants,id',
+            'tuteur_id' => 'nullable|exists:tuteurs,id',
+        ]);
+
+        $stage->update($validated);
         return $stage;
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/dashboard",
+     *     summary="Statistiques globales des stages",
+     *     tags={"Stages"},
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         required=false,
+     *         description="Si renseigné, renvoie uniquement le compteur pour ce statut (a_venir, en_cours, terminé)",
+     *         @OA\Schema(type="string", example="terminé")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Compteurs des stages récupérés avec succès"
+     *     )
+     * )
+     */
+    public function dashboard(Request $request)
+    {
+        $statusFilter = $request->query('status');
+        $stages = Stage::all();
+
+        if ($statusFilter) {
+            return response()->json([
+                $statusFilter => $stages->where('status', $statusFilter)->count()
+            ]);
+        }
+
+        return response()->json([
+            'a_venir'   => $stages->where('status', 'a_venir')->count(),
+            'en_cours'  => $stages->where('status', 'en_cours')->count(),
+            'termines'  => $stages->where('status', 'terminé')->count(),
+            'total'     => $stages->count(),
+        ]);
     }
 
     /**

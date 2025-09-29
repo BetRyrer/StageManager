@@ -6,10 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Etudiant;
 use App\Models\MailLog;
-use App\Mail\StageConfirmationMail;
-use App\Mail\StageRappelMail;
-use App\Mail\StageFinMail;
-use Carbon\Carbon;
+use App\Models\MailTemplate;
 
 class StageMailController extends Controller
 {
@@ -18,7 +15,11 @@ class StageMailController extends Controller
         $request->validate([
             'ids' => 'required|array',
             'type' => 'required|string|in:confirmation,rappel,fin',
+            'cc'   => 'nullable|array',       // tableau d’emails manuels
+            'cc.*' => 'email',               // chaque élément doit être un email valide
         ]);
+
+        $template = MailTemplate::where('type', $request->type)->firstOrFail();
 
         $etudiants = Etudiant::whereIn('id', $request->ids)
             ->with('stage.tuteur')
@@ -27,33 +28,53 @@ class StageMailController extends Controller
         foreach ($etudiants as $etu) {
             $stage = $etu->stage;
 
-            if (!$stage) {
-                continue; // skip si pas de stage
-            }
+            $email = $etu->mail_universitaire ?? $etu->mail_perso ?? null;
+            if (!$stage || empty($email)) continue;
 
-            switch ($request->type) {
-                case 'confirmation':
-                    Mail::to($etu->email)->send(new StageConfirmationMail($etu, $stage));
-                    break;
+            $subject = $this->parseTemplate($template->subject, $etu, $stage);
+            $body    = $this->parseTemplate($template->body, $etu, $stage);
 
-                case 'rappel':
-                    Mail::to($etu->email)->send(new StageRappelMail($etu, $stage));
-                    break;
+            Mail::send([], [], function ($message) use ($etu, $stage, $email, $subject, $body, $request) {
+                $message->to($email)
+                        ->subject($subject)
+                        ->html($body);
 
-                case 'fin':
-                    Mail::to($etu->email)->send(new StageFinMail($etu, $stage));
-                    break;
-            }
+                // ✅ CC obligatoire : le tuteur
+                if (!empty($stage->tuteur?->email)) {
+                    $message->cc($stage->tuteur->email);
+                }
 
-            //  Log en base
+                // ✅ CC optionnel : secrétaire ou autre (fourni dans la requête)
+                if (!empty($request->cc)) {
+                    foreach ($request->cc as $ccEmail) {
+                        $message->cc($ccEmail);
+                    }
+                }
+            });
+
             MailLog::create([
                 'etudiant_id' => $etu->id,
                 'type' => $request->type,
-                'email' => $etu->email,
-                'sent_at' => Carbon::now(),
+                'email' => $email,
+                'sent_at' => now(),
             ]);
         }
 
-        return response()->json(['message' => 'Mails envoyés avec succès et logs enregistrés ✅']);
+        return response()->json(['message' => 'Mails envoyés avec succès ✅']);
+    }
+
+    private function parseTemplate($template, $etu, $stage)
+    {
+        $replacements = [
+            '{{nom}}' => $etu->nom,
+            '{{prenom}}' => $etu->prenom,
+            '{{email}}' => $etu->mail_universitaire ?? $etu->mail_perso ?? '',
+            '{{date_debut}}' => $stage->date_debut ?? '',
+            '{{date_fin}}' => $stage->date_fin ?? '',
+            '{{entreprise}}' => $stage->entreprise ?? '',
+            '{{tuteur}}' => $stage->tuteur->nom ?? '',
+        ];
+
+        return str_replace(array_keys($replacements), array_values($replacements), $template);
     }
 }
