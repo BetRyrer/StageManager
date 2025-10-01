@@ -7,7 +7,7 @@ import Termines from "../../components/Dashboard/Termines";
 
 import Datatable from "../../components/Datatable/Datatable";
 import { etudiantsColumns } from "../../components/Datatable/etudiantsColumns";
-import ImportButton from "../../components/Import/ImportButton";
+import EmailButton from "../../components/Import/EmailButton";
 import EtudiantDetail from "./EtudiantDetail";
 
 function Etudiant() {
@@ -24,7 +24,7 @@ function Etudiant() {
         <h1 className="text-2xl font-bold text-red-600">
           Gestion des étudiants
         </h1>
-        <ImportButton onClick={handleImport} />
+        <EmailButton onClick={handleImport} />
       </div>
 
       {/* Cartes */}

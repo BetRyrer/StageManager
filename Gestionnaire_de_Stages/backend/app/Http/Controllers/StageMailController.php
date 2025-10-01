@@ -14,12 +14,18 @@ class StageMailController extends Controller
     {
         $request->validate([
             'ids' => 'required|array',
-            'type' => 'required|string|in:confirmation,rappel,fin',
-            'cc'   => 'nullable|array',       // tableau d’emails manuels
-            'cc.*' => 'email',               // chaque élément doit être un email valide
+            'type' => 'required|string',
+            'cc'   => 'nullable|array',
+            'cc.*' => 'email',
+            'subject' => 'nullable|string',
+            'body'    => 'nullable|string',
         ]);
 
-        $template = MailTemplate::where('type', $request->type)->firstOrFail();
+        // Si ce n'est pas "custom", on va chercher dans la table
+        $template = null;
+        if ($request->type !== 'custom') {
+            $template = MailTemplate::where('type', $request->type)->firstOrFail();
+        }
 
         $etudiants = Etudiant::whereIn('id', $request->ids)
             ->with('stage.tuteur')
@@ -27,24 +33,28 @@ class StageMailController extends Controller
 
         foreach ($etudiants as $etu) {
             $stage = $etu->stage;
-
             $email = $etu->mail_universitaire ?? $etu->mail_perso ?? null;
             if (!$stage || empty($email)) continue;
 
-            $subject = $this->parseTemplate($template->subject, $etu, $stage);
-            $body    = $this->parseTemplate($template->body, $etu, $stage);
+            // 🔹 Cas custom → on prend ce qui vient du front
+            if ($request->type === 'custom') {
+                $subject = $this->parseTemplate($request->subject, $etu, $stage);
+                $body    = $this->parseTemplate($request->body, $etu, $stage);
+            } else {
+                // 🔹 Cas avec modèle en BDD
+                $subject = $this->parseTemplate($template->subject, $etu, $stage);
+                $body    = $this->parseTemplate($template->body, $etu, $stage);
+            }
 
             Mail::send([], [], function ($message) use ($etu, $stage, $email, $subject, $body, $request) {
                 $message->to($email)
                         ->subject($subject)
                         ->html($body);
 
-                // ✅ CC obligatoire : le tuteur
                 if (!empty($stage->tuteur?->email)) {
                     $message->cc($stage->tuteur->email);
                 }
 
-                // ✅ CC optionnel : secrétaire ou autre (fourni dans la requête)
                 if (!empty($request->cc)) {
                     foreach ($request->cc as $ccEmail) {
                         $message->cc($ccEmail);
@@ -65,6 +75,8 @@ class StageMailController extends Controller
 
     private function parseTemplate($template, $etu, $stage)
     {
+        if (empty($template)) return '';
+
         $replacements = [
             '{{nom}}' => $etu->nom,
             '{{prenom}}' => $etu->prenom,

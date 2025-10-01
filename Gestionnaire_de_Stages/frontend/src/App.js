@@ -5,6 +5,7 @@ import StageDetail from "./pages/Stages/StageDetail";
 import Etudiant from "./pages/Etudiants/Etudiant";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Emails from "./pages/Emails/Emails";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/Stages" element={<Stages />} />
           <Route path="/Etudiant" element={<Etudiant />} />
           <Route path="/stages/:id" element={<StageDetail />} />
+          <Route path="/Emails" element={<Emails />} />
         </Routes>
       </main>
       <Footer />

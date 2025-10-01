@@ -1,14 +1,4 @@
-// components/Header/Header.jsx
-import {
-  Home,
-  Briefcase,
-  Users,
-  Building2,
-  ClipboardList,
-  FileText,
-  Upload,
-  Bell,
-} from "lucide-react";
+import { Home, Briefcase, Users, Building2 } from "lucide-react";
 
 function Header() {
   return (
@@ -38,7 +28,7 @@ function Header() {
             <Users size={18} /> <span>Étudiants</span>
           </a>
           <a
-            href="/entreprises"
+            href="/Emails"
             className="flex items-center space-x-1 hover:opacity-90"
           >
             <Building2 size={18} /> <span>Email</span>

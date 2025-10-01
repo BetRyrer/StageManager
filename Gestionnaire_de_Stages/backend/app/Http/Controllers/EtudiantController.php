@@ -20,7 +20,7 @@ class EtudiantController extends Controller
      */
     public function index()
     {
-        return Etudiant::with('stages')->get();
+        return Etudiant::with('stage')->get();
     }
 
     /**

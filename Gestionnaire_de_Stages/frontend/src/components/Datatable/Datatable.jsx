@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import DataTable, { createTheme } from "react-data-table-component";
 import api from "../../services/api";
 
-// 🎨 Thème perso
 createTheme("customTheme", {
   text: {
     primary: "#111827",
@@ -54,7 +53,7 @@ function Datatable({ title, columns, apiUrl }) {
         setData(Array.isArray(result) ? result : []);
       })
       .catch((err) => {
-        setData([]); // sécurité
+        setData([]);
       })
       .finally(() => setLoading(false));
   }, [apiUrl]);
@@ -68,7 +67,7 @@ function Datatable({ title, columns, apiUrl }) {
         pagination
         highlightOnHover
         striped
-        progressPending={loading} // spinner si loading
+        progressPending={loading}
         theme="customTheme"
         customStyles={customStyles}
         noDataComponent="Aucune donnée trouvée"

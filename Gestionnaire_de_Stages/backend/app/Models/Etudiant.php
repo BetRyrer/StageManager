@@ -31,8 +31,8 @@ class Etudiant extends Model
 
 
     // Un étudiant a un seul stage
-    public function stages()
+    public function stage()
     {
-        return $this->hasMany(Stage::class, 'etudiant_id');
+        return $this->hasOne(Stage::class, 'etudiant_id');
     }
 }
