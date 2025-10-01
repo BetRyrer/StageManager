@@ -1,10 +1,9 @@
-// components/Datatable/Datatable.jsx
-import DataTable, { createTheme } from "react-data-table-component";
 import { useEffect, useState } from "react";
+import DataTable, { createTheme } from "react-data-table-component";
 import api from "../../services/api";
-import { stagesColumns } from "./stagesColumns";
 
-createTheme("stagesTheme", {
+// 🎨 Thème perso
+createTheme("customTheme", {
   text: {
     primary: "#111827",
     secondary: "#374151",
@@ -24,26 +23,11 @@ const customStyles = {
       color: "#fff",
       fontSize: "14px",
       fontWeight: "bold",
-      borderTopLeftRadius: "8px",
-      borderTopRightRadius: "8px",
-    },
-  },
-  headCells: {
-    style: {
-      color: "#fff",
-      fontWeight: "600",
     },
   },
   rows: {
     style: {
       minHeight: "55px",
-      "&:nth-of-type(odd)": {
-        backgroundColor: "#f9fafb",
-      },
-      "&:hover": {
-        backgroundColor: "#f3f4f6",
-        transition: "background-color 0.2s ease-in-out",
-      },
     },
   },
   pagination: {
@@ -54,33 +38,43 @@ const customStyles = {
   },
 };
 
-function StagesDatatable({ title = "Données" }) {
+function Datatable({ title, columns, apiUrl }) {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     api
-      .get("/stages")
+      .get(`/${apiUrl}`)
       .then((res) => {
-        console.log("Réponse API Stages:", res.data);
-        setData(res.data);
+        let result = res.data;
+        if (!Array.isArray(result)) {
+          result = res.data[apiUrl] || Object.values(res.data)[0];
+        }
+        setData(Array.isArray(result) ? result : []);
       })
-      .catch((err) => console.error("Erreur API stages:", err));
-  }, []);
+      .catch((err) => {
+        setData([]); // sécurité
+      })
+      .finally(() => setLoading(false));
+  }, [apiUrl]);
 
   return (
     <div className="mt-6 bg-white p-4 rounded-xl shadow">
       <h2 className="text-lg font-semibold mb-4">{title}</h2>
       <DataTable
-        columns={stagesColumns}
+        columns={columns}
         data={data}
         pagination
         highlightOnHover
         striped
-        theme="stagesTheme"
+        progressPending={loading} // spinner si loading
+        theme="customTheme"
         customStyles={customStyles}
+        noDataComponent="Aucune donnée trouvée"
       />
     </div>
   );
 }
 
-export default StagesDatatable;
+export default Datatable;

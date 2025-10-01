@@ -32,7 +32,7 @@ function Header() {
             <Briefcase size={18} /> <span>Gestion stages</span>
           </a>
           <a
-            href="/etudiants"
+            href="/etudiant"
             className="flex items-center space-x-1 hover:opacity-90"
           >
             <Users size={18} /> <span>Étudiants</span>
@@ -41,7 +41,7 @@ function Header() {
             href="/entreprises"
             className="flex items-center space-x-1 hover:opacity-90"
           >
-            <Building2 size={18} /> <span>Entreprises</span>
+            <Building2 size={18} /> <span>Email</span>
           </a>
         </nav>
 

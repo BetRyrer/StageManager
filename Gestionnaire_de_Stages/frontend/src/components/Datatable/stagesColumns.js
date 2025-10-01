@@ -1,5 +1,4 @@
-// components/Datatable/stagesColumns.js
-export const stagesColumns = [
+export const stagesColumns = (onView) => [
   {
     name: "Étudiant",
     selector: (row) => `${row.etudiant.nom} ${row.etudiant.prenom}`,
@@ -25,14 +24,14 @@ export const stagesColumns = [
     cell: (row) => (
       <span
         className={`px-2 py-1 rounded text-xs font-medium ${
-          row.statut === "EN COURS"
+          row.status === "en_cours"
             ? "bg-yellow-100 text-yellow-800"
-            : row.statut === "TERMINÉ"
+            : row.status === "terminé"
             ? "bg-green-100 text-green-800"
             : "bg-gray-100 text-gray-800"
         }`}
       >
-        {row.statut}
+        {row.status}
       </span>
     ),
     sortable: true,
@@ -42,7 +41,7 @@ export const stagesColumns = [
     name: "Actions",
     cell: (row) => (
       <button
-        onClick={() => alert(`Voir le stage de ${row.etudiant.nom}`)}
+        onClick={() => onView(row)}
         className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
       >
         Voir

@@ -2,7 +2,6 @@
 import Actifs from "../../components/Dashboard/Actifs";
 import Attente from "../../components/Dashboard/Attente";
 import Termines from "../../components/Dashboard/Termines";
-import NoteMoyenne from "../../components/Dashboard/NoteMoyenne";
 
 import { useEffect, useState } from "react";
 import api from "../../services/api";
@@ -34,7 +33,6 @@ function Home() {
         <Actifs />
         <Attente />
         <Termines />
-        <NoteMoyenne />
       </div>
 
       {/* DataTable */}

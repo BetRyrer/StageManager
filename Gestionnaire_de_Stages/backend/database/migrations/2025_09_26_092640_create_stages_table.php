@@ -42,7 +42,8 @@ return new class extends Migration
             $table->text('commentaire_duree_travail')->nullable();
             $table->string('code_elp')->nullable();
             $table->string('element_pedagogique')->nullable();
-            $table->enum('status', ['en_cours', 'terminé', 'validation'])->default('en_attente');
+            $table->enum('status', ['en_cours','terminé','validation'])
+          ->default('en_cours');
             $table->timestamps();
         });
     }

@@ -4,15 +4,16 @@ import { useEffect, useState } from "react";
 import Actifs from "../../components/Dashboard/Actifs";
 import Attente from "../../components/Dashboard/Attente";
 import Termines from "../../components/Dashboard/Termines";
-import NoteMoyenne from "../../components/Dashboard/NoteMoyenne";
 
 import api from "../../services/api";
 import Datatable from "../../components/Datatable/Datatable";
 import { stagesColumns } from "../../components/Datatable/stagesColumns";
 import ImportButton from "../../components/Import/ImportButton";
+import StageDetail from "./StageDetail";
 
 function Stages() {
   const [stages, setStages] = useState([]);
+  const [selectedStage, setSelectedStage] = useState(null);
 
   useEffect(() => {
     api
@@ -22,7 +23,7 @@ function Stages() {
   }, []);
 
   const handleImport = () => {
-    alert("⚡ Import Delpaa lancé !");
+    alert(" Import Delpaa lancé !");
   };
 
   return (
@@ -37,13 +38,18 @@ function Stages() {
         <Actifs />
         <Attente />
         <Termines />
-        <NoteMoyenne />
       </div>
       {/* Tableau */}
       <Datatable
         title="Liste des stages"
-        columns={stagesColumns}
-        data={stages}
+        columns={stagesColumns((row) => setSelectedStage(row))}
+        apiUrl="stages"
+      />
+
+      {/* Détail stage */}
+      <StageDetail
+        stage={selectedStage}
+        onClose={() => setSelectedStage(null)}
       />
     </div>
   );
