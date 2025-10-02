@@ -3,6 +3,7 @@ import { useState } from "react";
 import Actifs from "../../components/Dashboard/Actifs";
 import Attente from "../../components/Dashboard/Attente";
 import Termines from "../../components/Dashboard/Termines";
+import TotalStages from "../../components/Dashboard/TotalStages";
 
 import Datatable from "../../components/Datatable/Datatable";
 import { stagesColumns } from "../../components/Datatable/stagesColumns";
@@ -43,6 +44,7 @@ function Stages() {
         <Actifs />
         <Attente />
         <Termines />
+        <TotalStages />
       </div>
 
       {/* Tableau */}

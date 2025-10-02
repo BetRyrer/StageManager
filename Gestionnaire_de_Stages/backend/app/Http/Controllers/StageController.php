@@ -192,7 +192,7 @@ class StageController extends Controller
         }
 
         return response()->json([
-            'a_venir'   => $stages->where('status', 'a_venir')->count(),
+            'attente'   => $stages->where('status', 'attente')->count(),
             'en_cours'  => $stages->where('status', 'en_cours')->count(),
             'termines'  => $stages->where('status', 'terminé')->count(),
             'total'     => $stages->count(),

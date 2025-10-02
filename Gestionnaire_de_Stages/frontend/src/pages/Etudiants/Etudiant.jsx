@@ -1,10 +1,6 @@
 // pages/Etudiants/Etudiant.jsx
 import { useState } from "react";
 
-import Actifs from "../../components/Dashboard/Actifs";
-import Attente from "../../components/Dashboard/Attente";
-import Termines from "../../components/Dashboard/Termines";
-
 import Datatable from "../../components/Datatable/Datatable";
 import { etudiantsColumns } from "../../components/Datatable/etudiantsColumns";
 import EmailButton from "../../components/Import/EmailButton";
@@ -25,13 +21,6 @@ function Etudiant() {
           Gestion des étudiants
         </h1>
         <EmailButton onClick={handleImport} />
-      </div>
-
-      {/* Cartes */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <Actifs />
-        <Attente />
-        <Termines />
       </div>
 
       {/* Tableau */}

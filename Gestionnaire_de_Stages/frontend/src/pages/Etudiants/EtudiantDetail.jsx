@@ -36,15 +36,9 @@ function EtudiantDetail({ etudiant, onClose }) {
 
         {/* Autres données BDD si dispo */}
         <div className="bg-gray-50 p-4 rounded-lg mb-4">
-          <h3 className="text-lg font-semibold mb-2">📚 Informations</h3>
+          <h3 className="text-lg font-semibold mb-2">📚 Promotion</h3>
           <p>
-            <strong>Date de naissance :</strong> {etudiant.date_naissance}
-          </p>
-          <p>
-            <strong>Promotion :</strong> {etudiant.promotion}
-          </p>
-          <p>
-            <strong>Status :</strong> {etudiant.status}
+            <strong>Promotion :</strong> {etudiant.libelle_etape}
           </p>
         </div>
 

@@ -21,6 +21,11 @@ export const etudiantsColumns = (onView) => [
     selector: (row) => row.tel_portable || "—",
     sortable: true,
   },
+  {
+    name: "Promotion",
+    selector: (row) => row.code_etape,
+    sortable: true,
+  },
 
   {
     name: "Actions",

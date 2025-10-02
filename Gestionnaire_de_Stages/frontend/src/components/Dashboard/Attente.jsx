@@ -7,7 +7,7 @@ function Attente() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    api.get("/dashboard?status=en_cours").then((res) => {
+    api.get("/dashboard?status=attente").then((res) => {
       console.log("Réponse API Attente:", res.data);
       setCount(res.data["attente"]);
     });
@@ -19,7 +19,6 @@ function Attente() {
       label="En attente validation"
       color="text-orange-500"
       borderColor="border-orange-500"
-      extra="-5 depuis hier"
     />
   );
 }

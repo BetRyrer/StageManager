@@ -43,24 +43,24 @@ class Stage extends Model
         'element_pedagogique',
     ];
       //  Calcul automatique du status
-    public function getStatusAttribute()
-    {
-        $now = Carbon::now();
+public function getStatusAttribute()
+{
+    $now = Carbon::now();
 
-        if ($this->date_debut && $now->lt(Carbon::parse($this->date_debut))) {
-            return 'a_venir';
-        }
-
-        if ($this->date_debut && $this->date_fin && $now->between(Carbon::parse($this->date_debut), Carbon::parse($this->date_fin))) {
-            return 'en_cours';
-        }
-
-        if ($this->date_fin && $now->gt(Carbon::parse($this->date_fin))) {
-            return 'terminé';
-        }
-
-        return 'validation';
+    if ($this->date_debut && $now->lt(Carbon::parse($this->date_debut))) {
+        return 'attente'; // avant le début
     }
+
+    if ($this->date_debut && $this->date_fin && $now->between(Carbon::parse($this->date_debut), Carbon::parse($this->date_fin))) {
+        return 'en_cours';
+    }
+
+    if ($this->date_fin && $now->gt(Carbon::parse($this->date_fin))) {
+        return 'terminé';
+    }
+
+    return 'inconnu';
+}
 
     // Relations
     public function etudiant()
