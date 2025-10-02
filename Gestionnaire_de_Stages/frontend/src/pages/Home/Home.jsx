@@ -5,8 +5,6 @@ import Termines from "../../components/Dashboard/Termines";
 
 import { useEffect, useState } from "react";
 import api from "../../services/api";
-import Datatable from "../../components/Datatable/Datatable";
-import { stagesColumns } from "../../components/Datatable/stagesColumns";
 
 function Home() {
   const [stages, setStages] = useState([]);
@@ -34,9 +32,6 @@ function Home() {
         <Attente />
         <Termines />
       </div>
-
-      {/* DataTable */}
-      <Datatable title="Stages récents" columns={stagesColumns} data={stages} />
     </div>
   );
 }

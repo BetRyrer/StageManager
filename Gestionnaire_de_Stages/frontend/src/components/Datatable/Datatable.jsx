@@ -41,18 +41,28 @@ function Datatable({ title, columns, apiUrl }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  console.log("👉 props.columns reçu par Datatable :", columns);
+
   useEffect(() => {
     setLoading(true);
     api
       .get(`/${apiUrl}`)
       .then((res) => {
+        console.log(`👉 Réponse API /${apiUrl}:`, res.data);
         let result = res.data;
+
         if (!Array.isArray(result)) {
-          result = res.data[apiUrl] || Object.values(res.data)[0];
+          if (res.data && typeof res.data === "object") {
+            result = res.data[apiUrl] || Object.values(res.data)[0];
+          }
         }
-        setData(Array.isArray(result) ? result : []);
+
+        const finalData = Array.isArray(result) ? result : [];
+        console.log("👉 Données finales envoyées au tableau :", finalData);
+        setData(finalData);
       })
       .catch((err) => {
+        console.error("❌ Erreur API:", err);
         setData([]);
       })
       .finally(() => setLoading(false));

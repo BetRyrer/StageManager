@@ -1,3 +1,5 @@
+import Button from "../Buttons/Button";
+
 export const stagesColumns = (onView) => [
   {
     name: "Étudiant",
@@ -40,12 +42,9 @@ export const stagesColumns = (onView) => [
   {
     name: "Actions",
     cell: (row) => (
-      <button
-        onClick={() => onView(row)}
-        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-      >
+      <Button variant="danger" size="sm" onClick={() => onView(row)}>
         Voir
-      </button>
+      </Button>
     ),
     ignoreRowClick: true,
     allowOverflow: true,

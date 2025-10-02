@@ -28,7 +28,7 @@ function Header() {
             <Users size={18} /> <span>Étudiants</span>
           </a>
           <a
-            href="/Emails"
+            href="/Mailsender"
             className="flex items-center space-x-1 hover:opacity-90"
           >
             <Building2 size={18} /> <span>Email</span>

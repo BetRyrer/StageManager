@@ -1,30 +1,34 @@
-// pages/Stages/Stages.jsx
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import Actifs from "../../components/Dashboard/Actifs";
 import Attente from "../../components/Dashboard/Attente";
 import Termines from "../../components/Dashboard/Termines";
 
-import api from "../../services/api";
 import Datatable from "../../components/Datatable/Datatable";
 import { stagesColumns } from "../../components/Datatable/stagesColumns";
 import ImportButtonDelpaa from "../../components/Import/ImportButtonDelpaa";
 import StageDetail from "./StageDetail";
+import { useToast } from "../../components/Toasts/ToastProvider";
 
 function Stages() {
-  const [stages, setStages] = useState([]);
+  const { addToast } = useToast();
   const [selectedStage, setSelectedStage] = useState(null);
 
-  useEffect(() => {
-    api
-      .get("/stages")
-      .then((res) => setStages(res.data))
-      .catch((err) => console.error("Erreur API Stages:", err));
-  }, []);
-
   const handleImport = () => {
-    alert(" Import Delpaa lancé !");
+    addToast({
+      type: "loading",
+      title: "Import en cours",
+      text: "Veuillez patienter, nous traitons le fichier...",
+    });
+    setTimeout(() => {
+      addToast({
+        type: "success",
+        title: "Import terminé",
+        text: "Les données Delpaa ont été importées avec succès ",
+      });
+    }, 2000);
   };
+  const cols = stagesColumns((row) => setSelectedStage(row));
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -33,18 +37,16 @@ function Stages() {
         <h1 className="text-2xl font-bold text-red-600">Gestion des stages</h1>
         <ImportButtonDelpaa onClick={handleImport} />
       </div>
+
       {/* Cartes */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <Actifs />
         <Attente />
         <Termines />
       </div>
+
       {/* Tableau */}
-      <Datatable
-        title="Liste des stages"
-        columns={stagesColumns((row) => setSelectedStage(row))}
-        apiUrl="stages"
-      />
+      <Datatable title="Liste des stages" columns={cols} apiUrl="stages" />
 
       {/* Détail stage */}
       <StageDetail

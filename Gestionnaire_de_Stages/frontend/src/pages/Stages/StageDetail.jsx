@@ -1,4 +1,5 @@
 import { Briefcase, Users, Building2 } from "lucide-react";
+import Button from "../../components/Buttons/Button";
 
 function StageDetail({ stage, onClose }) {
   if (!stage) return null;
@@ -94,12 +95,13 @@ function StageDetail({ stage, onClose }) {
         </div>
 
         <div className="mt-6 flex justify-end">
-          <button
+          <Button
+            variant="default"
             onClick={onClose}
-            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+            className="bg-gray-600 hover:bg-gray-700 text-white"
           >
             Fermer
-          </button>
+          </Button>
         </div>
       </div>
     </div>

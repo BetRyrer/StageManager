@@ -1,5 +1,5 @@
-// components/Datatable/EtudiantDetail.jsx
 import { User, Mail, Phone, Home } from "lucide-react";
+import Button from "../../components/Buttons/Button";
 
 function EtudiantDetail({ etudiant, onClose }) {
   if (!etudiant) return null;
@@ -49,12 +49,9 @@ function EtudiantDetail({ etudiant, onClose }) {
         </div>
 
         <div className="mt-6 flex justify-end">
-          <button
-            onClick={onClose}
-            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-          >
+          <Button variant="secondary" onClick={onClose}>
             Fermer
-          </button>
+          </Button>
         </div>
       </div>
     </div>

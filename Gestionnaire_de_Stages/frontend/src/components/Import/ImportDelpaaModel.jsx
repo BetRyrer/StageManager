@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { importStages } from "../../services/importService";
+import Button from "../Buttons/Button";
+import { useToast } from "../Toasts/ToastProvider";
 
 function ImportDelpaaModal({ onClose }) {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { addToast } = useToast();
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -11,7 +14,11 @@ function ImportDelpaaModal({ onClose }) {
 
   const handleImport = async () => {
     if (!file) {
-      alert("⚠️ Merci de sélectionner un fichier !");
+      addToast({
+        type: "error",
+        title: "Fichier manquant",
+        text: "⚠️ Merci de sélectionner un fichier avant d'importer.",
+      });
       return;
     }
 
@@ -19,12 +26,19 @@ function ImportDelpaaModal({ onClose }) {
       setLoading(true);
       const result = await importStages(file);
 
-      alert(`✅ Import réussi : ${result.total} lignes importées`);
-      console.log("Résultat import:", result);
+      addToast({
+        type: "success",
+        title: "Import terminé ✅",
+        text: `${result.total} lignes ont été importées avec succès.`,
+      });
 
       onClose();
     } catch (err) {
-      alert("❌ Erreur lors de l'import. Vérifie le fichier ou l'API.");
+      addToast({
+        type: "error",
+        title: "Erreur d'import ❌",
+        text: "Impossible d'importer le fichier. Vérifie son format ou l'API.",
+      });
     } finally {
       setLoading(false);
     }
@@ -36,12 +50,9 @@ function ImportDelpaaModal({ onClose }) {
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Import depuis Delpaa</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
+          <Button variant="ghost" size="sm" onClick={onClose}>
             ✕
-          </button>
+          </Button>
         </div>
 
         {/* Dropzone */}
@@ -67,20 +78,12 @@ function ImportDelpaaModal({ onClose }) {
 
         {/* Footer */}
         <div className="flex justify-end gap-3">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-lg border hover:bg-gray-100"
-            disabled={loading}
-          >
+          <Button variant="outline" onClick={onClose} disabled={loading}>
             Annuler
-          </button>
-          <button
-            onClick={handleImport}
-            disabled={loading}
-            className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 disabled:opacity-50"
-          >
+          </Button>
+          <Button variant="danger" onClick={handleImport} disabled={loading}>
             {loading ? "Import en cours..." : "Importer"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
