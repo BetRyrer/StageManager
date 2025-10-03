@@ -6,6 +6,7 @@ import Etudiant from "./pages/Etudiants/Etudiant";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import MailSender from "./pages/Emails/MailSender";
+import StageListByStatus from "./pages/Stages/StageListByStatus";
 import { ToastProvider } from "./components/Toasts/ToastProvider";
 
 function App() {
@@ -16,8 +17,12 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/Stages" element={<Stages />} />
-            <Route path="/Etudiant" element={<Etudiant />} />
+            <Route path="/stages" element={<Stages />} />
+            <Route path="/etudiant" element={<Etudiant />} />
+            <Route
+              path="/stages/status/:status"
+              element={<StageListByStatus />}
+            />
             <Route path="/stages/:id" element={<StageDetail />} />
             <Route path="/mailsender" element={<MailSender />} />
           </Routes>

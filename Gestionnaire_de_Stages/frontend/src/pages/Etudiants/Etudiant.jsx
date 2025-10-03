@@ -9,6 +9,10 @@ import EtudiantDetail from "./EtudiantDetail";
 function Etudiant() {
   const [selectedEtudiant, setSelectedEtudiant] = useState(null);
 
+  // États fictifs pour recherche et filtre BUT
+  const [search, setSearch] = useState("");
+  const [butYear, setButYear] = useState("");
+
   const handleImport = () => {
     alert("Import Delpaa lancé !");
   };
@@ -20,7 +24,27 @@ function Etudiant() {
         <h1 className="text-2xl font-bold text-red-600">
           Gestion des étudiants
         </h1>
-        <EmailButton onClick={handleImport} />
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+          <input
+            type="text"
+            placeholder="Rechercher un stage..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border rounded-lg px-4 py-2 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-red-400"
+          />
+
+          <select
+            value={butYear}
+            onChange={(e) => setButYear(e.target.value)}
+            className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400"
+          >
+            <option value="">Toutes les années</option>
+            <option value="BUT1">BUT 1</option>
+            <option value="BUT2">BUT 2</option>
+            <option value="BUT3">BUT 3</option>
+          </select>
+          <EmailButton onClick={handleImport} />
+        </div>
       </div>
 
       {/* Tableau */}
