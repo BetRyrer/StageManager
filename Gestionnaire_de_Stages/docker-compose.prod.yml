@@ -1,0 +1,73 @@
+version: "3.9"
+
+services:
+  # -----------------------------
+  # Backend Laravel (PHP-FPM)
+  # -----------------------------
+  laravel:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: laravel_prod
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: ${APP_KEY}
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: stages_db
+      DB_USERNAME: laravel
+      DB_PASSWORD: laravel
+    volumes:
+      - ./backend:/var/www/html
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  # -----------------------------
+  # Frontend React — servir via NGINX
+  # -----------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: react_prod
+    depends_on:
+      - laravel
+    restart: unless-stopped
+
+  # -----------------------------
+  # Serveur NGINX — reverse proxy
+  # -----------------------------
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_prod
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./backend:/var/www/html
+      - ./frontend/build:/usr/share/nginx/html
+    depends_on:
+      - laravel
+      - frontend
+    restart: unless-stopped
+
+  # -----------------------------
+  # Base MariaDB
+  # -----------------------------
+  db:
+    image: mariadb:11
+    container_name: mariadb_prod
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: stages_db
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel
+    volumes:
+      - db_data_prod:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  db_data_prod:

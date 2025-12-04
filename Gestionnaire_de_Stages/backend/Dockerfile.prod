@@ -1,0 +1,34 @@
+# Étape 1 : Image de base PHP-FPM
+FROM php:8.2-fpm
+
+# Installer extensions PHP nécessaires à Laravel
+RUN apt-get update && apt-get install -y \
+    unzip git curl libzip-dev libpng-dev libxml2-dev libjpeg-dev libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_mysql zip dom gd bcmath
+
+# Installer Composer
+COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
+
+# Définir le dossier de travail
+WORKDIR /var/www/html
+
+# Copier le code Laravel
+COPY . .
+
+# Installer les dépendances PHP en mode production
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Optimisations Laravel
+RUN php artisan config:clear
+RUN php artisan route:clear
+RUN php artisan view:clear
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
+
+# Permissions storage et cache
+RUN chmod -R 777 storage bootstrap/cache
+
+# PHP-FPM démarre automatiquement
+CMD ["php-fpm"]
