@@ -3,9 +3,12 @@ FROM node:18-alpine AS build
 
 WORKDIR /app
 
-# Installer les dépendances
+# Réduire la taille du cache npm (important pour les petites VM)
+ENV npm_config_cache=/tmp/npm-cache
+
+# Installer les dépendances en mode CI (plus propre et léger que npm install)
 COPY package*.json ./
-RUN npm install
+RUN npm ci --prefer-offline --no-audit --no-fund
 
 # Copier le reste du code
 COPY . .
@@ -13,8 +16,7 @@ COPY . .
 # Build en production
 RUN npm run build
 
-
-# Étape 2 : NGINX pour servir le build
+# Étape 2 : Serveur NGINX pour servir le build
 FROM nginx:alpine
 
 # Copier le build React dans Nginx
