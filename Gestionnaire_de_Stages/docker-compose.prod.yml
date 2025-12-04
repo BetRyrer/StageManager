@@ -12,7 +12,7 @@ services:
     environment:
       APP_ENV: production
       APP_DEBUG: "false"
-      APP_KEY: ""
+      APP_KEY: "base64:PM0LoGlOpB8OCxD/WUgRpoj12P7HRi8kpr59SdpgE84="
       DB_CONNECTION: mysql
       DB_HOST: db
       DB_PORT: 3306
