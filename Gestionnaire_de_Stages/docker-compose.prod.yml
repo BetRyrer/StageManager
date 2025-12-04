@@ -1,9 +1,6 @@
 version: "3.9"
 
 services:
-  # -----------------------------
-  # Backend Laravel (PHP-FPM)
-  # -----------------------------
   laravel:
     build:
       context: ./backend
@@ -23,38 +20,20 @@ services:
       - db
     restart: unless-stopped
 
-
-  # -----------------------------
-  # Frontend React — Build + NGINX intégré
-  # -----------------------------
-  frontend:
+  nginx:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.prod
-    container_name: react_prod
-    restart: unless-stopped
-
-
-  # -----------------------------
-  # Serveur NGINX — Reverse proxy Laravel + sert frontend
-  # -----------------------------
-  nginx:
-    image: nginx:alpine
+      dockerfile: Dockerfile.prod   # ⬅️ NGINX avec ton build dedans
     container_name: nginx_prod
     ports:
       - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf   # Configuration Nginx
-      - ./backend/public:/var/www/html/public      # Accès aux fichiers publics Laravel (images, uploads…)
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./backend/public:/var/www/html/public
     depends_on:
       - laravel
-      - frontend
     restart: unless-stopped
 
-
-  # -----------------------------
-  # Base MariaDB
-  # -----------------------------
   db:
     image: mariadb:11
     container_name: mariadb_prod
@@ -66,7 +45,6 @@ services:
     volumes:
       - db_data_prod:/var/lib/mysql
     restart: unless-stopped
-
 
 volumes:
   db_data_prod:
