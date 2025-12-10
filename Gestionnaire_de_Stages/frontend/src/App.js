@@ -8,6 +8,8 @@ import Footer from "./components/Footer";
 import MailSender from "./pages/Emails/MailSender";
 import StageListByStatus from "./pages/Stages/StageListByStatus";
 import { ToastProvider } from "./components/Toasts/ToastProvider";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./pages/Login/Login";
 
 function App() {
   return (
@@ -16,15 +18,28 @@ function App() {
         <Header />
         <main>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/stages" element={<Stages />} />
-            <Route path="/etudiant" element={<Etudiant />} />
+            {/* Route publique */}
+            <Route path="/login" element={<Login />} />
+
+            {/* Toutes les autres routes sont protégées */}
             <Route
-              path="/stages/status/:status"
-              element={<StageListByStatus />}
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/stages" element={<Stages />} />
+                    <Route path="/stages/:id" element={<StageDetail />} />
+                    <Route
+                      path="/stages/status/:status"
+                      element={<StageListByStatus />}
+                    />
+                    <Route path="/etudiant" element={<Etudiant />} />
+                    <Route path="/mailsender" element={<MailSender />} />
+                  </Routes>
+                </ProtectedRoute>
+              }
             />
-            <Route path="/stages/:id" element={<StageDetail />} />
-            <Route path="/mailsender" element={<MailSender />} />
           </Routes>
         </main>
         <Footer />
