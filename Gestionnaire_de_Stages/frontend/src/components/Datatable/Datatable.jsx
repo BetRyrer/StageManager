@@ -42,7 +42,7 @@ function Datatable({ title, columns, apiUrl, dataOverride }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 👉 Si dataOverride est fourni, on utilise directement les données filtrées
+    // Si dataOverride est fourni, on utilise directement les données filtrées
     if (dataOverride) {
       setData(dataOverride);
       setLoading(false);

@@ -13,14 +13,14 @@ function Etudiant() {
   const [search, setSearch] = useState("");
   const [butYear, setButYear] = useState("");
 
-  // 📌 Charger les étudiants une seule fois
+  //  Charger les étudiants une seule fois
   useEffect(() => {
     api.get("/etudiants").then((res) => {
       setEtudiants(Array.isArray(res.data) ? res.data : []);
     });
   }, []);
 
-  // 🔍 Filtrage sécurisé
+  //  Filtrage sécurisé
   const filteredEtudiants = etudiants.filter((e) => {
     const nom = e.nom?.toLowerCase() || "";
     const prenom = e.prenom?.toLowerCase() || "";
