@@ -37,18 +37,23 @@ const customStyles = {
   },
 };
 
-function Datatable({ title, columns, apiUrl }) {
+function Datatable({ title, columns, apiUrl, dataOverride }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  console.log("👉 props.columns reçu par Datatable :", columns);
-
   useEffect(() => {
+    // Si dataOverride est fourni, on utilise directement les données filtrées
+    if (dataOverride) {
+      setData(dataOverride);
+      setLoading(false);
+      return;
+    }
+
+    // 👉 Sinon on fait l'appel API comme avant
     setLoading(true);
     api
       .get(`/${apiUrl}`)
       .then((res) => {
-        console.log(`👉 Réponse API /${apiUrl}:`, res.data);
         let result = res.data;
 
         if (!Array.isArray(result)) {
@@ -58,15 +63,11 @@ function Datatable({ title, columns, apiUrl }) {
         }
 
         const finalData = Array.isArray(result) ? result : [];
-        console.log("👉 Données finales envoyées au tableau :", finalData);
         setData(finalData);
       })
-      .catch((err) => {
-        console.error("❌ Erreur API:", err);
-        setData([]);
-      })
+      .catch(() => setData([]))
       .finally(() => setLoading(false));
-  }, [apiUrl]);
+  }, [apiUrl, dataOverride]);
 
   return (
     <div className="mt-6 bg-white p-4 rounded-xl shadow">
