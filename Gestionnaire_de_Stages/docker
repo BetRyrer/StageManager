@@ -1,0 +1,2 @@
+[H[2J[3JEnter password: 
+ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: YES)

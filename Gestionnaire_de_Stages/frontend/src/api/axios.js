@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-	baseURL: "https://stage-manager.fr/api",
+  baseURL: "https://stage-manager.fr/api",
 });
 
 api.interceptors.request.use((config) => {

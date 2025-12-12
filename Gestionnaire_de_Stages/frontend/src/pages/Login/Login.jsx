@@ -9,7 +9,7 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-  // 🔥 Si déjà connecté → redirect /stages
+  //  Si déjà connecté → redirect /stages
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) navigate("/stages");

@@ -23,7 +23,7 @@ services:
   nginx:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.prod   # ⬅️ NGINX avec ton build dedans
+      dockerfile: Dockerfile.prod # ⬅ NGINX avec ton build dedans
     container_name: nginx_prod
     ports:
       - "80:80"
