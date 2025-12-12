@@ -28,7 +28,6 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <Routes>
-                  <Route path="/" element={<Home />} />
                   <Route path="/stages" element={<Stages />} />
                   <Route path="/stages/:id" element={<StageDetail />} />
                   <Route path="/stages/status/:status" element={<StageListByStatus />} />
