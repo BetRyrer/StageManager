@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import Home from "./pages/Home/Home";
 import Stages from "./pages/Stages/Stages";
 import StageDetail from "./pages/Stages/StageDetail";
 import Etudiant from "./pages/Etudiants/Etudiant";

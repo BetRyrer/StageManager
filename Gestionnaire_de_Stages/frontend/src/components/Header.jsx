@@ -1,4 +1,4 @@
-import { Home, Briefcase, Users, Building2 } from "lucide-react";
+import { Briefcase, Users, Building2 } from "lucide-react";
 
 function Header() {
   return (
@@ -12,9 +12,6 @@ function Header() {
 
         {/* Colonne centrale : Navigation */}
         <nav className="flex justify-center space-x-6">
-          <a href="/" className="flex items-center space-x-1 hover:opacity-90">
-            <Home size={18} /> <span>Dashboard</span>
-          </a>
           <a
             href="/stages"
             className="flex items-center space-x-1 hover:opacity-90"
