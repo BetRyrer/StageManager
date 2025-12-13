@@ -1,0 +1,5 @@
+[H[2J[3JEnter password: 
+ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: YES)
+[prod e76b050] test prod
+ 6 files changed, 64 insertions(+), 41 deletions(-)
+ create mode 100644 Gestionnaire_de_Stages/docker

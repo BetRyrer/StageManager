@@ -1,5 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home/Home";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Stages from "./pages/Stages/Stages";
 import StageDetail from "./pages/Stages/StageDetail";
 import Etudiant from "./pages/Etudiants/Etudiant";
@@ -11,38 +10,45 @@ import { ToastProvider } from "./components/Toasts/ToastProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login/Login";
 
+function AppContent() {
+  const location = useLocation();
+  const isLoginPage = location.pathname === "/login";
+
+  return (
+    <>
+      {!isLoginPage && <Header />}
+
+      <main>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+
+          <Route
+            path="/*"
+            element={
+              <ProtectedRoute>
+                <Routes>
+                  <Route path="/stages" element={<Stages />} />
+                  <Route path="/stages/:id" element={<StageDetail />} />
+                  <Route path="/stages/status/:status" element={<StageListByStatus />} />
+                  <Route path="/etudiant" element={<Etudiant />} />
+                  <Route path="/mailsender" element={<MailSender />} />
+                </Routes>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </main>
+
+      {!isLoginPage && <Footer />}
+    </>
+  );
+}
+
 function App() {
   return (
     <ToastProvider>
       <Router>
-        <Header />
-        <main>
-          <Routes>
-            {/* Route publique */}
-            <Route path="/login" element={<Login />} />
-
-            {/* Toutes les autres routes sont protégées */}
-            <Route
-              path="/*"
-              element={
-                <ProtectedRoute>
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/stages" element={<Stages />} />
-                    <Route path="/stages/:id" element={<StageDetail />} />
-                    <Route
-                      path="/stages/status/:status"
-                      element={<StageListByStatus />}
-                    />
-                    <Route path="/etudiant" element={<Etudiant />} />
-                    <Route path="/mailsender" element={<MailSender />} />
-                  </Routes>
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </main>
-        <Footer />
+        <AppContent />
       </Router>
     </ToastProvider>
   );
