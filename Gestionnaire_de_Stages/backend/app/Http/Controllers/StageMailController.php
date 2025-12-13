@@ -12,81 +12,108 @@ class StageMailController extends Controller
 {
     public function envoyerMails(Request $request)
     {
+        //  Validation
         $request->validate([
-            'ids' => 'required|array',
-            'type' => 'required|string',
-            'cc'   => 'nullable|array',
-            'cc.*' => 'email',
+            'ids'     => 'required|array',
+            'type'    => 'required|string',
+            'cc'      => 'nullable|array',
+            'cc.*'    => 'email',
             'subject' => 'nullable|string',
             'body'    => 'nullable|string',
         ]);
 
-        // Si ce n'est pas "custom", on va chercher dans la table
+        //  Récupération du template si pas custom
         $template = null;
         if ($request->type !== 'custom') {
             $template = MailTemplate::where('type', $request->type)->firstOrFail();
         }
 
+        //  Étudiants + relations
         $etudiants = Etudiant::whereIn('id', $request->ids)
-            ->with('stage.tuteur')
+            ->with(['stage.tuteur'])
             ->get();
 
         foreach ($etudiants as $etu) {
-            $stage = $etu->stage;
-            $email = $etu->mail_universitaire ?? $etu->mail_perso ?? null;
-            if (!$stage || empty($email)) continue;
 
-            // 🔹 Cas custom → on prend ce qui vient du front
+            $stage = $etu->stage;
+
+            // Email prioritaire : universitaire → perso
+            $email = $etu->mail_universitaire ?? $etu->mail_perso;
+
+            if (!$stage || empty($email)) {
+                continue;
+            }
+
+            //  Sujet + contenu
             if ($request->type === 'custom') {
                 $subject = $this->parseTemplate($request->subject, $etu, $stage);
                 $body    = $this->parseTemplate($request->body, $etu, $stage);
             } else {
-                // 🔹 Cas avec modèle en BDD
                 $subject = $this->parseTemplate($template->subject, $etu, $stage);
                 $body    = $this->parseTemplate($template->body, $etu, $stage);
             }
 
-            Mail::send([], [], function ($message) use ($etu, $stage, $email, $subject, $body, $request) {
-                $message->to($email)
-                        ->subject($subject)
-                        ->html($body);
+            //  Envoi avec template HTML générique
+            Mail::send(
+                'emails.generic',
+                ['content' => $body],
+                function ($message) use ($email, $subject, $stage, $request) {
 
-                if (!empty($stage->tuteur?->email)) {
-                    $message->cc($stage->tuteur->email);
-                }
+                    $message->to($email)
+                            ->subject($subject);
 
-                if (!empty($request->cc)) {
-                    foreach ($request->cc as $ccEmail) {
-                        $message->cc($ccEmail);
+                    // CC tuteur
+                    if (!empty($stage->tuteur?->email)) {
+                        $message->cc($stage->tuteur->email);
+                    }
+
+                    // CC manuels
+                    if (!empty($request->cc)) {
+                        foreach ($request->cc as $ccEmail) {
+                            $message->cc($ccEmail);
+                        }
                     }
                 }
-            });
+            );
 
+            //  Log d’envoi
             MailLog::create([
                 'etudiant_id' => $etu->id,
-                'type' => $request->type,
-                'email' => $email,
-                'sent_at' => now(),
+                'type'        => $request->type,
+                'email'       => $email,
+                'sent_at'     => now(),
             ]);
         }
 
-        return response()->json(['message' => 'Mails envoyés avec succès ✅']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Mails envoyés avec succès '
+        ]);
     }
 
-    private function parseTemplate($template, $etu, $stage)
+    /**
+     * Remplacement des variables dans le texte
+     */
+    private function parseTemplate(?string $template, $etu, $stage): string
     {
-        if (empty($template)) return '';
+        if (empty($template)) {
+            return '';
+        }
 
         $replacements = [
-            '{{nom}}' => $etu->nom,
-            '{{prenom}}' => $etu->prenom,
-            '{{email}}' => $etu->mail_universitaire ?? $etu->mail_perso ?? '',
-            '{{date_debut}}' => $stage->date_debut ?? '',
-            '{{date_fin}}' => $stage->date_fin ?? '',
-            '{{entreprise}}' => $stage->entreprise ?? '',
-            '{{tuteur}}' => $stage->tuteur->nom ?? '',
+            '{{nom}}'         => $etu->nom ?? '',
+            '{{prenom}}'      => $etu->prenom ?? '',
+            '{{email}}'       => $etu->mail_universitaire ?? $etu->mail_perso ?? '',
+            '{{date_debut}}'  => $stage->date_debut ?? '',
+            '{{date_fin}}'    => $stage->date_fin ?? '',
+            '{{entreprise}}'  => $stage->entreprise ?? '',
+            '{{tuteur}}'      => $stage->tuteur->nom ?? '',
         ];
 
-        return str_replace(array_keys($replacements), array_values($replacements), $template);
+        return str_replace(
+            array_keys($replacements),
+            array_values($replacements),
+            $template
+        );
     }
 }

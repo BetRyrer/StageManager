@@ -60,7 +60,7 @@ function Etudiant() {
             className="border rounded-lg px-4 py-2 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-red-400"
           />
 
-          {/* 🎓 Filtre année */}
+          {/* Filtre année */}
           <select
             value={butYear}
             onChange={(e) => setButYear(e.target.value)}
