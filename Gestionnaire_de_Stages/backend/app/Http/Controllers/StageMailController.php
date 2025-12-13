@@ -12,7 +12,6 @@ class StageMailController extends Controller
 {
     public function envoyerMails(Request $request)
     {
-        //  Validation
         $request->validate([
             'ids'     => 'required|array',
             'type'    => 'required|string',
@@ -22,13 +21,12 @@ class StageMailController extends Controller
             'body'    => 'nullable|string',
         ]);
 
-        //  Récupération du template si pas custom
+        // Template si non custom
         $template = null;
         if ($request->type !== 'custom') {
             $template = MailTemplate::where('type', $request->type)->firstOrFail();
         }
 
-        //  Étudiants + relations
         $etudiants = Etudiant::whereIn('id', $request->ids)
             ->with(['stage.tuteur'])
             ->get();
@@ -36,15 +34,13 @@ class StageMailController extends Controller
         foreach ($etudiants as $etu) {
 
             $stage = $etu->stage;
-
-            // Email prioritaire : universitaire → perso
             $email = $etu->mail_universitaire ?? $etu->mail_perso;
 
             if (!$stage || empty($email)) {
                 continue;
             }
 
-            //  Sujet + contenu
+            // Sujet + contenu
             if ($request->type === 'custom') {
                 $subject = $this->parseTemplate($request->subject, $etu, $stage);
                 $body    = $this->parseTemplate($request->body, $etu, $stage);
@@ -53,10 +49,12 @@ class StageMailController extends Controller
                 $body    = $this->parseTemplate($template->body, $etu, $stage);
             }
 
-            //  Envoi avec template HTML générique
+            //  FORMATAGE EMAIL ICI
+            $formattedBody = $this->formatEmailContent($body);
+
             Mail::send(
                 'emails.generic',
-                ['content' => $body],
+                ['content' => $formattedBody],
                 function ($message) use ($email, $subject, $stage, $request) {
 
                     $message->to($email)
@@ -76,7 +74,6 @@ class StageMailController extends Controller
                 }
             );
 
-            //  Log d’envoi
             MailLog::create([
                 'etudiant_id' => $etu->id,
                 'type'        => $request->type,
@@ -87,12 +84,12 @@ class StageMailController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Mails envoyés avec succès '
+            'message' => 'Mails envoyés avec succès'
         ]);
     }
 
     /**
-     * Remplacement des variables dans le texte
+     * Remplacement des variables {{ }}
      */
     private function parseTemplate(?string $template, $etu, $stage): string
     {
@@ -115,5 +112,17 @@ class StageMailController extends Controller
             array_values($replacements),
             $template
         );
+    }
+
+    /**
+     *  FORMATAGE HTML EMAIL (ANTI GROS ESPACES)
+     */
+    private function formatEmailContent(string $content): string
+    {
+        // Supprime les lignes vides multiples
+        $content = preg_replace("/\n{2,}/", "\n", $content);
+
+        // Sécurise le HTML + transforme \n en <br>
+        return nl2br(e($content));
     }
 }

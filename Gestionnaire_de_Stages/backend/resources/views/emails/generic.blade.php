@@ -31,7 +31,7 @@
                         <td style="padding:32px; color:#1e293b; font-size:15px; line-height:1.6;">
                             
                             <div style="white-space:pre-line;">
-                                {!! nl2br(e($content)) !!}
+                                {{ $content }}
                             </div>
 
                         </td>
