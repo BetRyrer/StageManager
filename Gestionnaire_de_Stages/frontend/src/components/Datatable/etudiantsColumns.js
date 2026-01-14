@@ -26,6 +26,15 @@ export const etudiantsColumns = (onView) => [
     selector: (row) => row.code_etape,
     sortable: true,
   },
+  {
+    name: "Tuteur",
+    selector: (row) =>
+      row.tuteurs && row.tuteurs.length > 0
+        ? row.tuteurs.map(t => `${t.prenom} ${t.nom}`).join(", ")
+        : "—",
+    sortable: false,
+  },
+
 
   {
     name: "Actions",

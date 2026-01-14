@@ -8,6 +8,7 @@ use App\Http\Controllers\StageController;
 use App\Http\Controllers\MailLogController;
 use App\Http\Controllers\StageMailController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TuteurEcoleController;
 
 // AUTH
 Route::post('/login', [AuthController::class, 'login']);
@@ -27,4 +28,11 @@ Route::middleware('auth.token')->group(function () {
     Route::get('/mail-logs', [MailLogController::class, 'index']);
     Route::post('/envoyer-mails', [StageMailController::class, 'envoyerMails']);
     Route::get('/mail-logs/{id}', [MailLogController::class, 'show']);
+
+        Route::get('/tuteurs-all', [TuteurEcoleController::class, 'index']);
+
+        Route::post(
+            '/etudiants/{etudiant}/tuteurs',
+            [TuteurEcoleController::class, 'attachToEtudiant']
+);
 });

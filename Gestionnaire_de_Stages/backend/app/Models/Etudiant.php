@@ -29,6 +29,16 @@ class Etudiant extends Model
         'pays',
     ];
 
+    // relation N–N avec les tuteurs
+    public function tuteurs()
+    {
+        return $this->belongsToMany(
+            TuteurEcole::class,
+            'etudiant_tuteur_ecole',
+            'etudiant_id',
+            'tuteur_ecole_id'
+        );
+    }
 
     // Un étudiant a un seul stage
     public function stage()

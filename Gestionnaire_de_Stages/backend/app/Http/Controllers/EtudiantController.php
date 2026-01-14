@@ -20,7 +20,7 @@ class EtudiantController extends Controller
      */
     public function index()
     {
-        return Etudiant::with('stage')->get();
+        return Etudiant::with(['stage', 'tuteurs'])->get();
     }
 
     /**
@@ -82,7 +82,7 @@ class EtudiantController extends Controller
      */
     public function show(Etudiant $etudiant)
     {
-        return $etudiant->load('stage');
+        return $etudiant->load(['stage', 'tuteurs']);
     }
 
     /**
@@ -117,11 +117,21 @@ class EtudiantController extends Controller
      *     )
      * )
      */
-    public function update(Request $request, Etudiant $etudiant)
-    {
-        $etudiant->update($request->all());
-        return $etudiant;
-    }
+public function update(Request $request, Etudiant $etudiant)
+{
+    $validated = $request->validate([
+        'nom' => 'sometimes|required|string|max:255',
+        'prenom' => 'sometimes|required|string|max:255',
+        'email' => 'sometimes|required|email|unique:etudiants,email,' . $etudiant->id,
+        'filiere' => 'sometimes|required|string|max:255',
+        'annee' => 'sometimes|required|string|max:10',
+    ]);
+
+    $etudiant->update($validated);
+
+    return $etudiant;
+}
+
 
     /**
      * @OA\Delete(
