@@ -130,7 +130,7 @@ function EtudiantDetail({ etudiant, onClose, onDelete, onEdit }) {
                       {tuteur.prenom} {tuteur.nom}
                     </span>
                     <Button
-                      variant="primary"
+                      variant="success"
                       onClick={() => ajouterTuteur(tuteur.id)}
                     >
                       Ajouter
