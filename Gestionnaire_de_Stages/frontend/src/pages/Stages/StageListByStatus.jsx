@@ -34,7 +34,6 @@ function StageListByStatus() {
     });
   }, [apiUrl]);
 
-  // 🔍 Filtrage sécurisé (aucune erreur possible)
   const filteredStages = stages.filter((s) => {
     const entreprise = s.entreprise?.toLowerCase() || "";
     const sujet = s.sujet?.toLowerCase() || "";
