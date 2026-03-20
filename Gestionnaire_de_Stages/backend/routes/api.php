@@ -32,7 +32,7 @@ Route::middleware('auth.token')->group(function () {
         Route::get('/tuteurs-all', [TuteurEcoleController::class, 'index']);
 
         Route::post(
-            '/etudiants/{etudiant}/tuteurs',
+            '/etudiants/{etudiantId}/tuteurs',
             [TuteurEcoleController::class, 'attachToEtudiant']
-);
+        );
 });

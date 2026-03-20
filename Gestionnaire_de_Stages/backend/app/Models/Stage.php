@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
-
 class Stage extends Model
 {
     use HasFactory;
@@ -39,30 +38,32 @@ class Stage extends Model
         'commentaire_stage',
         'commentaire_duree_travail',
         'code_elp',
-        'status',
         'element_pedagogique',
     ];
-      //  Calcul automatique du status
-public function getStatusAttribute()
-{
-    $now = Carbon::now();
 
-    if ($this->date_debut && $now->lt(Carbon::parse($this->date_debut))) {
-        return 'attente'; // avant le début
+    public function getStatusAttribute()
+    {
+        $now = Carbon::now();
+
+        if ($this->date_debut && $now->lt(Carbon::parse($this->date_debut))) {
+            return 'attente';
+        }
+
+        if (
+            $this->date_debut &&
+            $this->date_fin &&
+            $now->between(Carbon::parse($this->date_debut), Carbon::parse($this->date_fin))
+        ) {
+            return 'en_cours';
+        }
+
+        if ($this->date_fin && $now->gt(Carbon::parse($this->date_fin))) {
+            return 'termines';
+        }
+
+        return 'inconnu';
     }
 
-    if ($this->date_debut && $this->date_fin && $now->between(Carbon::parse($this->date_debut), Carbon::parse($this->date_fin))) {
-        return 'en_cours';
-    }
-
-    if ($this->date_fin && $now->gt(Carbon::parse($this->date_fin))) {
-        return 'termines';
-    }
-
-    return 'inconnu';
-}
-
-    // Relations
     public function etudiant()
     {
         return $this->belongsTo(Etudiant::class, 'etudiant_id');

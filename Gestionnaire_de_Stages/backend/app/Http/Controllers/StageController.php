@@ -18,7 +18,7 @@ class StageController extends Controller
      *         name="status",
      *         in="query",
      *         required=false,
-     *         description="Filtrer par statut (a_venir, en_cours, terminé)",
+     *         description="Filtrer par statut (attente, en_cours, termines)",
      *         @OA\Schema(type="string", example="en_cours")
      *     ),
      *     @OA\Response(
@@ -29,14 +29,18 @@ class StageController extends Controller
      */
     public function index(Request $request)
     {
-        $statusFilter = $request->query('status'); 
+        $statusFilter = $request->query('status');
 
-        $stages = Stage::with(['etudiant', 'entreprise', 'tuteur'])->get();
+        $stages = Stage::with([
+            'etudiant.tuteurs',
+            'entreprise',
+            'tuteur'
+        ])->get();
 
         if ($statusFilter) {
             $stages = $stages->filter(function ($stage) use ($statusFilter) {
                 return $stage->status === $statusFilter;
-            })->values(); 
+            })->values();
         }
 
         return $stages;
@@ -50,14 +54,16 @@ class StageController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"titre","description","date_debut","entreprise_id","etudiant_id"},
-     *             @OA\Property(property="titre", type="string", example="Développement d’une application web"),
-     *             @OA\Property(property="description", type="string", example="Stage de 2 mois en développement fullstack avec Laravel et React."),
+     *             required={"date_debut","entreprise_id","etudiant_id"},
      *             @OA\Property(property="date_debut", type="string", format="date", example="2025-06-01"),
      *             @OA\Property(property="date_fin", type="string", format="date", example="2025-08-01"),
      *             @OA\Property(property="entreprise_id", type="integer", example=1),
      *             @OA\Property(property="etudiant_id", type="integer", example=2),
-     *             @OA\Property(property="tuteur_id", type="integer", nullable=true, example=3)
+     *             @OA\Property(property="tuteur_id", type="integer", nullable=true, example=3),
+     *             @OA\Property(property="thematique", type="string", example="Développement web"),
+     *             @OA\Property(property="sujet", type="string", example="Création d'une application web"),
+     *             @OA\Property(property="gratification", type="string", example="600"),
+     *             @OA\Property(property="unite_gratification", type="string", example="€ / mois")
      *         )
      *     ),
      *     @OA\Response(
@@ -73,16 +79,41 @@ class StageController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'titre' => 'required|string|max:255',
-            'description' => 'required|string',
+            'etudiant_id' => 'required|exists:etudiants,id',
+            'entreprise_id' => 'required|exists:entreprises,id',
+            'tuteur_id' => 'nullable|exists:tuteurs,id',
             'date_debut' => 'required|date',
             'date_fin' => 'nullable|date',
-            'entreprise_id' => 'required|exists:entreprises,id',
-            'etudiant_id' => 'required|exists:etudiants,id',
-            'tuteur_id' => 'nullable|exists:tuteurs,id',
+            'interruption' => 'nullable|string',
+            'date_debut_interruption' => 'nullable|date',
+            'date_fin_interruption' => 'nullable|date',
+            'thematique' => 'nullable|string',
+            'sujet' => 'nullable|string',
+            'fonctions_taches' => 'nullable|string',
+            'detail_projet' => 'nullable|string',
+            'duree_stage' => 'nullable|numeric',
+            'nb_jours_travail' => 'nullable|numeric',
+            'nb_heures_hebdo' => 'nullable|numeric',
+            'gratification' => 'nullable',
+            'unite_gratification' => 'nullable|string',
+            'validation_administrative' => 'nullable|string',
+            'validation_pedagogique' => 'nullable|string',
+            'avenants' => 'nullable|string',
+            'date_creation_convention' => 'nullable|date',
+            'date_modification_convention' => 'nullable|date',
+            'annee_universitaire' => 'nullable|string',
+            'type_convention' => 'nullable|string',
+            'commentaire_stage' => 'nullable|string',
+            'commentaire_duree_travail' => 'nullable|string',
+            'code_elp' => 'nullable|string',
+            'element_pedagogique' => 'nullable|string',
         ]);
 
-        return Stage::create($validated);
+        return Stage::create($validated)->load([
+            'etudiant.tuteurs',
+            'entreprise',
+            'tuteur'
+        ]);
     }
 
     /**
@@ -109,7 +140,11 @@ class StageController extends Controller
      */
     public function show(Stage $stage)
     {
-        return $stage->load(['etudiant', 'entreprise', 'tuteur']);
+        return $stage->load([
+            'etudiant.tuteurs',
+            'entreprise',
+            'tuteur'
+        ]);
     }
 
     /**
@@ -124,18 +159,6 @@ class StageController extends Controller
      *         description="ID du stage",
      *         @OA\Schema(type="integer", example=1)
      *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="titre", type="string", example="Nouveau titre"),
-     *             @OA\Property(property="description", type="string", example="Mise à jour de la description"),
-     *             @OA\Property(property="date_debut", type="string", format="date", example="2025-07-01"),
-     *             @OA\Property(property="date_fin", type="string", format="date", example="2025-09-01"),
-     *             @OA\Property(property="entreprise_id", type="integer", example=1),
-     *             @OA\Property(property="etudiant_id", type="integer", example=2),
-     *             @OA\Property(property="tuteur_id", type="integer", nullable=true, example=3)
-     *         )
-     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Stage mis à jour avec succès"
@@ -149,17 +172,43 @@ class StageController extends Controller
     public function update(Request $request, Stage $stage)
     {
         $validated = $request->validate([
-            'titre' => 'sometimes|string|max:255',
-            'description' => 'sometimes|string',
+            'etudiant_id' => 'sometimes|exists:etudiants,id',
+            'entreprise_id' => 'sometimes|exists:entreprises,id',
+            'tuteur_id' => 'nullable|exists:tuteurs,id',
             'date_debut' => 'sometimes|date',
             'date_fin' => 'nullable|date',
-            'entreprise_id' => 'sometimes|exists:entreprises,id',
-            'etudiant_id' => 'sometimes|exists:etudiants,id',
-            'tuteur_id' => 'nullable|exists:tuteurs,id',
+            'interruption' => 'nullable|string',
+            'date_debut_interruption' => 'nullable|date',
+            'date_fin_interruption' => 'nullable|date',
+            'thematique' => 'nullable|string',
+            'sujet' => 'nullable|string',
+            'fonctions_taches' => 'nullable|string',
+            'detail_projet' => 'nullable|string',
+            'duree_stage' => 'nullable|numeric',
+            'nb_jours_travail' => 'nullable|numeric',
+            'nb_heures_hebdo' => 'nullable|numeric',
+            'gratification' => 'nullable',
+            'unite_gratification' => 'nullable|string',
+            'validation_administrative' => 'nullable|string',
+            'validation_pedagogique' => 'nullable|string',
+            'avenants' => 'nullable|string',
+            'date_creation_convention' => 'nullable|date',
+            'date_modification_convention' => 'nullable|date',
+            'annee_universitaire' => 'nullable|string',
+            'type_convention' => 'nullable|string',
+            'commentaire_stage' => 'nullable|string',
+            'commentaire_duree_travail' => 'nullable|string',
+            'code_elp' => 'nullable|string',
+            'element_pedagogique' => 'nullable|string',
         ]);
 
         $stage->update($validated);
-        return $stage;
+
+        return $stage->load([
+            'etudiant.tuteurs',
+            'entreprise',
+            'tuteur'
+        ]);
     }
 
     /**
@@ -167,13 +216,6 @@ class StageController extends Controller
      *     path="/api/dashboard",
      *     summary="Statistiques globales des stages",
      *     tags={"Stages"},
-     *     @OA\Parameter(
-     *         name="status",
-     *         in="query",
-     *         required=false,
-     *         description="Si renseigné, renvoie uniquement le compteur pour ce statut (a_venir, en_cours, terminé)",
-     *         @OA\Schema(type="string", example="terminé")
-     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Compteurs des stages récupérés avec succès"
@@ -192,10 +234,10 @@ class StageController extends Controller
         }
 
         return response()->json([
-            'attente'   => $stages->where('status', 'attente')->count(),
-            'en_cours'  => $stages->where('status', 'en_cours')->count(),
-            'termines'  => $stages->where('status', 'terminé')->count(),
-            'total'     => $stages->count(),
+            'attente' => $stages->where('status', 'attente')->count(),
+            'en_cours' => $stages->where('status', 'en_cours')->count(),
+            'termines' => $stages->where('status', 'termines')->count(),
+            'total' => $stages->count(),
         ]);
     }
 
@@ -214,10 +256,6 @@ class StageController extends Controller
      *     @OA\Response(
      *         response=204,
      *         description="Stage supprimé avec succès"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Stage non trouvé"
      *     )
      * )
      */
@@ -232,27 +270,9 @@ class StageController extends Controller
      *     path="/api/stages/import",
      *     summary="Importer des stages depuis un fichier CSV",
      *     tags={"Stages"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *             @OA\Schema(
-     *                 @OA\Property(
-     *                     property="fichier",
-     *                     type="string",
-     *                     format="binary",
-     *                     description="Fichier CSV à importer"
-     *                 )
-     *             )
-     *         )
-     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Importation réussie"
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Erreur de validation"
      *     )
      * )
      */

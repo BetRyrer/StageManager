@@ -29,7 +29,6 @@ class Etudiant extends Model
         'pays',
     ];
 
-    // relation N–N avec les tuteurs
     public function tuteurs()
     {
         return $this->belongsToMany(
@@ -40,7 +39,6 @@ class Etudiant extends Model
         );
     }
 
-    // Un étudiant a un seul stage
     public function stage()
     {
         return $this->hasOne(Stage::class, 'etudiant_id');

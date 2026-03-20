@@ -27,4 +27,9 @@ class Tuteur extends Model
     {
         return $this->hasMany(Stage::class, 'tuteur_id');
     }
+
+    public function etudiants()
+    {
+        return $this->hasMany(Etudiant::class, 'tuteur_id');
+    }
 }

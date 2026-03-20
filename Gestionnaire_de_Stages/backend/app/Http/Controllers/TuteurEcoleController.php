@@ -9,12 +9,12 @@ use Illuminate\Http\Request;
 class TuteurEcoleController extends Controller
 {
     /**
-     * GET - récupérer tous les tuteurs
+     * GET - récupérer tous les tuteurs avec leurs étudiants
      */
     public function index()
     {
         return response()->json(
-            TuteurEcole::all(),
+            TuteurEcole::with('etudiants')->get(),
             200
         );
     }
