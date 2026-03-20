@@ -65,16 +65,16 @@ export default function StageDetail({
                         <span>Tuteur</span>
                     </h3>
                     <p>
-                        <strong>Nom :</strong> {stage.tuteur.prenom} {stage.tuteur.nom}
+                        <strong>Nom :</strong> {stage.tuteur?.prenom} {stage.tuteur?.nom}
                     </p>
                     <p>
-                        <strong>Email :</strong> {stage.tuteur.email}
+                        <strong>Email :</strong> {stage.tuteur?.email}
                     </p>
                     <p>
-                        <strong>Téléphone :</strong> {stage.tuteur.telephone}
+                        <strong>Téléphone :</strong> {stage.tuteur?.telephone}
                     </p>
                     <p>
-                        <strong>Fonction :</strong> {stage.tuteur.fonction}
+                        <strong>Fonction :</strong> {stage.tuteur?.fonction}
                     </p>
                 </div>
 

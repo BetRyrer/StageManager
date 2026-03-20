@@ -1,4 +1,11 @@
+export interface Tuteur {
+    id: number;
+    nom: string;
+    prenom: string;
+}
+
 export interface Etudiant {
+    id?: number;
     nom: string;
     prenom: string;
     mail_universitaire?: string;
@@ -8,6 +15,8 @@ export interface Etudiant {
     code_postal?: string;
     ville?: string;
     annee?: string;
+    code_etape?: string;
+    tuteurs?: Tuteur[];
 }
 
 export interface Entreprise {
@@ -19,18 +28,19 @@ export interface Entreprise {
     telephone?: string;
 }
 
-export interface Tuteur {
+export interface TuteurEntreprise {
+    id: number;
     nom: string;
     prenom: string;
     email?: string;
     telephone?: string;
     fonction?: string;
+    entreprise_id?: number;
 }
 
 export interface Stage {
     etudiant: Etudiant;
     entreprise: Entreprise;
-    tuteur: Tuteur;
     sujet?: string;
     thematique?: string;
     date_debut?: string;
@@ -39,4 +49,5 @@ export interface Stage {
     status?: string;
     gratification?: string | number;
     unite_gratification?: string;
+    tuteur?: TuteurEntreprise;
 }

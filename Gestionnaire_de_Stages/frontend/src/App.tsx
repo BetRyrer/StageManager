@@ -14,6 +14,7 @@ import MailSender from "./features/emails/pages/MailSender";
 import StageListByStatus from "./features/stages/pages/StageListByStatus";
 import ProtectedRoute from "./features/common/ProtectedRoute";
 import Login from "./features/login/pages/Login";
+import TuteursPage from "./features/tuteurs/pages/TuteursPage";
 
 function AppContent(): JSX.Element {
   const location = useLocation();
@@ -35,6 +36,7 @@ function AppContent(): JSX.Element {
             />
             <Route path="/etudiant" element={<Etudiant />} />
             <Route path="/mailsender" element={<MailSender />} />
+            <Route path="/tuteurs" element={<TuteursPage />} />
           </Route>
         </Routes>
       </main>

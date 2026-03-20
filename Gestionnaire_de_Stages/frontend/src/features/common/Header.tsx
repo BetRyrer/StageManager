@@ -32,6 +32,13 @@ function Header(): JSX.Element {
             <Users size={18} />
             <span>Étudiants</span>
           </Link>
+          <Link
+            to="/tuteurs"
+            className="flex items-center space-x-1 hover:opacity-90"
+          >
+            <Users size={18} />
+            <span>Tuteur</span>
+          </Link>
 
           <Link
             to="/mailsender"
@@ -40,6 +47,14 @@ function Header(): JSX.Element {
             <Building2 size={18} />
             <span>Email</span>
           </Link>
+          <Link
+            to="/tuteurs"
+            className="flex items-center space-x-1 hover:opacity-90"
+          >
+            <Building2 size={18} />
+            <span>Soutenance</span>
+          </Link>
+
         </nav>
 
         {/* Profil */}
