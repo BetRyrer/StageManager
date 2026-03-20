@@ -56,7 +56,7 @@ public function getStatusAttribute()
     }
 
     if ($this->date_fin && $now->gt(Carbon::parse($this->date_fin))) {
-        return 'terminé';
+        return 'termines';
     }
 
     return 'inconnu';
