@@ -25,14 +25,17 @@ Route::middleware('auth.token')->group(function () {
     Route::post('/stages/import', [StageController::class, 'import']);
     Route::get('/dashboard', [StageController::class, 'dashboard']);
 
-    Route::get('/mail-logs', [MailLogController::class, 'index']);
-    Route::post('/envoyer-mails', [StageMailController::class, 'envoyerMails']);
+    Route::get('/mail-logs',      [MailLogController::class, 'index']);
     Route::get('/mail-logs/{id}', [MailLogController::class, 'show']);
 
-        Route::get('/tuteurs-all', [TuteurEcoleController::class, 'index']);
+    Route::get('/tuteurs-all', [TuteurEcoleController::class, 'index']);
+    Route::post('/etudiants/{etudiantId}/tuteurs', [TuteurEcoleController::class, 'attachToEtudiant']);
 
-        Route::post(
-            '/etudiants/{etudiantId}/tuteurs',
-            [TuteurEcoleController::class, 'attachToEtudiant']
-        );
+    // MAILS
+    Route::prefix('mails')->group(function () {
+        Route::post('/',           [StageMailController::class, 'envoyerMails']);
+        Route::post('/preview',    [StageMailController::class, 'preview']);
+        Route::get('/logs',        [StageMailController::class, 'logs']);
+        Route::post('/retry/{id}', [StageMailController::class, 'retry']);
+    });
 });
