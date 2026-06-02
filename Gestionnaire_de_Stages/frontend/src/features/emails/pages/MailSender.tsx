@@ -12,6 +12,8 @@ export default function MailSender() {
         setSubject,
         body,
         setBody,
+        attachments,
+        setAttachments,
         etudiants,
         selected,
         setSelected,
@@ -30,8 +32,8 @@ export default function MailSender() {
                 Créez et envoyez des emails personnalisés à vos étudiants
             </p>
 
-            <div className="grid grid-cols-3 gap-6">
-                <div className="col-span-2 rounded-lg bg-white p-6 shadow">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div className="lg:col-span-2 rounded-lg bg-white p-6 shadow">
                     <h2 className="mb-4 text-lg font-semibold">
                         Composer votre email
                     </h2>
@@ -49,7 +51,10 @@ export default function MailSender() {
                                 setSubject={setSubject}
                                 body={body}
                                 setBody={setBody}
+                                attachments={attachments}
+                                setAttachments={setAttachments}
                             />
+
                             <VariablesInsert
                                 variables={variables}
                                 setBody={setBody}
@@ -62,8 +67,8 @@ export default function MailSender() {
                             onClick={envoyerMails}
                             disabled={loading}
                             className={`rounded px-4 py-2 text-white transition ${loading
-                                    ? "bg-gray-400 cursor-not-allowed"
-                                    : "bg-red-600 hover:bg-red-700"
+                                ? "cursor-not-allowed bg-gray-400"
+                                : "bg-red-600 hover:bg-red-700"
                                 }`}
                         >
                             {loading ? "Envoi..." : "Envoyer maintenant"}

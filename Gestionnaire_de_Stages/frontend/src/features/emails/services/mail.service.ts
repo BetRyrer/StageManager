@@ -8,6 +8,32 @@ export const mailService = {
     },
 
     async envoyerMails(payload: SendMailsPayload): Promise<void> {
-        await api.post("/envoyer-mails", payload);
+        const formData = new FormData();
+
+        payload.ids.forEach((id) => {
+            formData.append("ids[]", String(id));
+        });
+
+        formData.append("type", payload.type);
+
+        if (payload.subject !== null) {
+            formData.append("subject", payload.subject);
+        }
+
+        if (payload.body !== null) {
+            formData.append("body", payload.body);
+        }
+
+        if (payload.attachments?.length) {
+            payload.attachments.forEach((file) => {
+                formData.append("attachments[]", file);
+            });
+        }
+
+        await api.post("/envoyer-mails", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
     },
 };

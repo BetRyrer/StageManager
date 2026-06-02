@@ -55,7 +55,7 @@ export const stagesColumns = (
                         ? "bg-yellow-100 text-yellow-800"
                         : row.status === "termines"
                             ? "bg-green-100 text-green-800"
-                            : "bg-gray-100 text-gray-800"
+                            : "bg-orange-100 text-gray-800"
                         }`}
                 >
                     {row.status ?? "—"}

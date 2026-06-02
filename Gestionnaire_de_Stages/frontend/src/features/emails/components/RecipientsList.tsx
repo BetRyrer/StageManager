@@ -11,15 +11,15 @@ export default function RecipientsList({
 
             <p className="mb-4">
                 <span className="font-bold text-red-600">{selected.length}</span>{" "}
-                Sélectionnés <br />
-                <span className="text-gray-600">{etudiants.length} Total</span>
+                sélectionnés <br />
+                <span className="text-gray-600">{etudiants.length} total</span>
             </p>
 
             <div className="mb-4 max-h-80 space-y-2 overflow-y-auto">
                 {etudiants.map((d) => (
                     <label
                         key={d.id}
-                        className="flex items-center space-x-3 rounded border p-2 hover:bg-gray-50 cursor-pointer"
+                        className="cursor-pointer flex items-center space-x-3 rounded border p-2 hover:bg-gray-50"
                     >
                         <input
                             type="checkbox"
@@ -48,7 +48,7 @@ export default function RecipientsList({
                 <button
                     type="button"
                     onClick={() => setSelected(etudiants.map((d) => d.id))}
-                    className="text-red-600 font-medium hover:underline transition"
+                    className="font-medium text-red-600 transition hover:underline"
                 >
                     ✓ Tout
                 </button>
@@ -56,7 +56,7 @@ export default function RecipientsList({
                 <button
                     type="button"
                     onClick={() => setSelected([])}
-                    className="text-gray-600 font-medium hover:underline transition"
+                    className="font-medium text-gray-600 transition hover:underline"
                 >
                     ✗ Rien
                 </button>

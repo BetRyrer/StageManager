@@ -31,9 +31,24 @@ class StageMailController extends Controller
         ]);
 
         // Résolution du template
+        $request->validate([
+            'ids'             => 'required|array',
+            'ids.*'           => 'integer|exists:etudiants,id',
+            'type'            => 'required|string',
+            'cc'              => 'nullable|array',
+            'cc.*'            => 'email',
+            'subject'         => 'nullable|string',
+            'body'            => 'nullable|string',
+            'attachments'     => 'nullable|array',
+            'attachments.*'   => 'file|max:5120', // 5MB max par fichier
+        ]);
+
         $template = null;
         if ($validated['type'] !== 'custom') {
             $template = MailTemplate::where('type', $validated['type'])->firstOrFail();
+
+        if ($request->type !== 'custom') {
+            $template = MailTemplate::where('type', $request->type)->firstOrFail();
         }
 
         // Stockage des pièces jointes (avant de passer en queue)
@@ -46,9 +61,12 @@ class StageMailController extends Controller
         $dispatched = 0;
         $skipped    = [];
 
+        $successCount = 0;
+        $skipped = [];
+
         foreach ($etudiants as $etu) {
             $stage = $etu->stage;
-            $email = $etu->mail_universitaire ?? $etu->mail_perso;
+            $email = $etu->mail_universitaire ?: $etu->mail_perso;
 
             // Skip si données manquantes
             if (!$stage || empty($email)) {
@@ -56,6 +74,12 @@ class StageMailController extends Controller
                     'id'     => $etu->id,
                     'nom'    => "{$etu->prenom} {$etu->nom}",
                     'raison' => !$stage ? 'Aucun stage associé' : 'Email manquant',
+                ];
+                $skipped[] = [
+                    'etudiant_id' => $etu->id,
+                    'nom' => $etu->nom,
+                    'prenom' => $etu->prenom,
+                    'raison' => !$stage ? 'Aucun stage associé' : 'Aucun email disponible',
                 ];
                 continue;
             }
@@ -65,6 +89,52 @@ class StageMailController extends Controller
 
             // Création du log avec status PENDING
             $log = MailLog::create([
+            if ($request->type === 'custom') {
+                $subject = $this->parseTemplate($request->subject, $etu, $stage);
+                $body    = $this->parseTemplate($request->body, $etu, $stage);
+            } else {
+                $subject = $this->parseTemplate($template->subject, $etu, $stage);
+                $body    = $this->parseTemplate($template->body, $etu, $stage);
+            }
+
+            $formattedBody = $this->formatEmailContent($body);
+
+            Mail::send(
+                'emails.generic',
+                ['content' => $formattedBody],
+                function ($message) use ($email, $subject, $stage, $request) {
+                    $message->to($email)->subject($subject);
+
+                    // CC tuteur
+                    if (!empty($stage->tuteur?->email)) {
+                        $message->cc($stage->tuteur->email);
+                    }
+
+                    // CC manuels
+                    if (!empty($request->cc)) {
+                        foreach ($request->cc as $ccEmail) {
+                            $message->cc($ccEmail);
+                        }
+                    }
+
+                    // Pièces jointes
+                    if ($request->hasFile('attachments')) {
+                        foreach ($request->file('attachments') as $file) {
+                            if ($file->isValid()) {
+                                $message->attach(
+                                    $file->getRealPath(),
+                                    [
+                                        'as'   => $file->getClientOriginalName(),
+                                        'mime' => $file->getMimeType(),
+                                    ]
+                                );
+                            }
+                        }
+                    }
+                }
+            );
+
+            MailLog::create([
                 'etudiant_id' => $etu->id,
                 'type'        => $validated['type'],
                 'email'       => $email,
@@ -91,6 +161,10 @@ class StageMailController extends Controller
             dispatch($job)->onQueue('mails');
 
             $dispatched++;
+                'sent_at'     => now(),
+            ]);
+
+            $successCount++;
         }
 
         return response()->json([
@@ -131,6 +205,10 @@ class StageMailController extends Controller
             'subject' => $subject,
             'body'    => $this->formatEmailContent($body),
             'to'      => $etu->mail_universitaire ?? $etu->mail_perso,
+            'success' => true,
+            'message' => 'Mails envoyés avec succès',
+            'sent_count' => $successCount,
+            'skipped' => $skipped,
         ]);
     }
 
@@ -246,11 +324,21 @@ class StageMailController extends Controller
             '{{tuteur}}'         => trim("{$tuteurPrenom} {$tuteurNom}"),
             '{{tuteur_email}}'   => $stage->tuteur->email ?? '',
             '{{annee_scolaire}}' => $this->getAnneeScolaire(),
+            '{{nom}}'        => $etu->nom ?? '',
+            '{{prenom}}'     => $etu->prenom ?? '',
+            '{{email}}'      => $etu->mail_universitaire ?? $etu->mail_perso ?? '',
+            '{{date_debut}}' => !empty($stage->date_debut) ? \Carbon\Carbon::parse($stage->date_debut)->format('d/m/Y') : '',
+            '{{date_fin}}'   => !empty($stage->date_fin) ? \Carbon\Carbon::parse($stage->date_fin)->format('d/m/Y') : '',
+            '{{entreprise}}' => $stage->entreprise ?? '',
+            '{{tuteur}}'     => $stage->tuteur->nom ?? '',
         ];
 
         return str_replace(array_keys($replacements), array_values($replacements), $template);
     }
 
+    /**
+     * Formatage HTML email
+     */
     private function formatEmailContent(string $content): string
     {
         // Strip les balises dangereuses si saisie manuelle (custom)
@@ -258,6 +346,7 @@ class StageMailController extends Controller
 
         // Collapse les lignes vides multiples
         $content = preg_replace("/(\r?\n){3,}/", "\n\n", $content);
+        $content = preg_replace("/\n{3,}/", "\n\n", trim($content));
 
         return nl2br(e($content));
     }
@@ -267,4 +356,5 @@ class StageMailController extends Controller
         $year = now()->month >= 9 ? now()->year : now()->year - 1;
         return "{$year}-" . ($year + 1);
     }
+}
 }

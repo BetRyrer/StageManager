@@ -6,11 +6,11 @@ export function useMailSender() {
     const [selectedTemplate, setSelectedTemplate] = useState<string>("confirmation");
     const [subject, setSubject] = useState<string>("");
     const [body, setBody] = useState<string>("");
+    const [attachments, setAttachments] = useState<File[]>([]);
     const [etudiants, setEtudiants] = useState<Etudiant[]>([]);
     const [selected, setSelected] = useState<number[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
-    // 🔄 Récupération des étudiants
     useEffect(() => {
         const fetchEtudiants = async () => {
             try {
@@ -18,17 +18,26 @@ export function useMailSender() {
                 setEtudiants(data);
                 setSelected(data.map((e) => e.id));
             } catch (err) {
-                console.error("Erreur fetch étudiants:", err);
+                console.error("Erreur fetch étudiants :", err);
             }
         };
 
         fetchEtudiants();
     }, []);
 
-    // 📤 Envoi des mails
     const envoyerMails = async () => {
         if (selected.length === 0) {
             alert("Veuillez sélectionner au moins un étudiant.");
+            return;
+        }
+
+        if (selectedTemplate === "custom" && !subject.trim()) {
+            alert("Veuillez saisir un objet pour l'email.");
+            return;
+        }
+
+        if (selectedTemplate === "custom" && !body.trim()) {
+            alert("Veuillez saisir un contenu pour l'email.");
             return;
         }
 
@@ -40,11 +49,13 @@ export function useMailSender() {
                 type: selectedTemplate,
                 subject: selectedTemplate === "custom" ? subject : null,
                 body: selectedTemplate === "custom" ? body : null,
+                attachments,
             });
 
             alert("Emails envoyés avec succès !");
+            setAttachments([]);
         } catch (err) {
-            console.error("Erreur envoi mails:", err);
+            console.error("Erreur envoi mails :", err);
             alert("Erreur lors de l'envoi des emails.");
         } finally {
             setLoading(false);
@@ -91,6 +102,8 @@ export function useMailSender() {
         setSubject,
         body,
         setBody,
+        attachments,
+        setAttachments,
         etudiants,
         selected,
         setSelected,
