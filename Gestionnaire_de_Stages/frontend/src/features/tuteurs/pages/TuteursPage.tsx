@@ -1,5 +1,6 @@
 import TuteurList from "../components/TuteurList";
 import TuteurEtudiants from "../components/TuteurEtudiants";
+import CreateTuteurButton from "../components/CreateTuteurButton";
 import { useTuteursEcole } from "../hooks/useTuteursEcole";
 
 const TuteursPage = () => {
@@ -9,6 +10,7 @@ const TuteursPage = () => {
         setSelectedTuteur,
         loading,
         error,
+        refetch: refresh,
     } = useTuteursEcole();
 
     if (loading) {
@@ -17,6 +19,7 @@ const TuteursPage = () => {
                 <div className="mx-auto max-w-7xl">
                     <div className="animate-pulse space-y-6">
                         <div className="h-10 w-64 rounded-xl bg-zinc-200" />
+
                         <div className="grid grid-cols-1 gap-6 xl:grid-cols-[380px_minmax(0,1fr)]">
                             <div className="space-y-4">
                                 {Array.from({ length: 6 }).map((_, index) => (
@@ -26,6 +29,7 @@ const TuteursPage = () => {
                                     />
                                 ))}
                             </div>
+
                             <div className="h-[500px] rounded-3xl border border-zinc-200 bg-white" />
                         </div>
                     </div>
@@ -53,9 +57,11 @@ const TuteursPage = () => {
                     <p className="mb-2 text-sm font-medium uppercase tracking-[0.2em] text-zinc-500">
                         Gestion
                     </p>
+
                     <h1 className="text-4xl font-bold tracking-tight text-zinc-900">
                         Tuteurs école
                     </h1>
+
                     <p className="mt-2 text-zinc-600">
                         Consulte rapidement les tuteurs et les étudiants qui leur sont associés.
                     </p>
@@ -63,15 +69,18 @@ const TuteursPage = () => {
 
                 <div className="grid grid-cols-1 gap-6 xl:grid-cols-[380px_minmax(0,1fr)]">
                     <div className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-                        <div className="mb-5 flex items-center justify-between">
+                        <div className="mb-5 flex items-center justify-between gap-4">
                             <div>
                                 <h2 className="text-lg font-semibold text-zinc-900">
                                     Liste des tuteurs
                                 </h2>
+
                                 <p className="text-sm text-zinc-500">
                                     {tuteurs.length} tuteur(s)
                                 </p>
                             </div>
+
+                            <CreateTuteurButton onCreated={refresh} />
                         </div>
 
                         <TuteurList
