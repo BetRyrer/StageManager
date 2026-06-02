@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class TuteurEcoleController extends Controller
 {
     /**
-     * GET - récupérer tous les tuteurs avec leurs étudiants
+     * Liste des tuteurs école
      */
     public function index()
     {
@@ -20,7 +20,28 @@ class TuteurEcoleController extends Controller
     }
 
     /**
-     * POST - associer un tuteur à un étudiant
+     * Création d'un tuteur école
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+        ]);
+
+        $tuteur = TuteurEcole::create([
+            'nom' => $request->nom,
+            'prenom' => $request->prenom,
+        ]);
+
+        return response()->json([
+            'message' => 'Tuteur créé avec succès.',
+            'data' => $tuteur,
+        ], 201);
+    }
+
+    /**
+     * Associer un tuteur à un étudiant
      */
     public function attachToEtudiant(Request $request, $etudiantId)
     {
@@ -30,15 +51,17 @@ class TuteurEcoleController extends Controller
 
         $etudiant = Etudiant::findOrFail($etudiantId);
 
-        // règle métier : max 2 tuteurs
         if ($etudiant->tuteurs()->count() >= 2) {
             return response()->json([
                 'message' => 'Un étudiant ne peut pas avoir plus de 2 tuteurs.'
             ], 422);
         }
 
-        // éviter doublon
-        if ($etudiant->tuteurs()->where('tuteur_ecole_id', $request->tuteur_id)->exists()) {
+        if (
+            $etudiant->tuteurs()
+                ->where('tuteur_ecole_id', $request->tuteur_id)
+                ->exists()
+        ) {
             return response()->json([
                 'message' => 'Ce tuteur est déjà associé à cet étudiant.'
             ], 409);
