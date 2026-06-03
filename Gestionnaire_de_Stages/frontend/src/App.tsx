@@ -15,6 +15,7 @@ import StageListByStatus from "./features/stages/pages/StageListByStatus";
 import ProtectedRoute from "./features/common/ProtectedRoute";
 import Login from "./features/login/pages/Login";
 import TuteursPage from "./features/tuteurs/pages/TuteursPage";
+import SoutenancePage from "./features/soutenances/pages/SoutenancePage";
 
 function AppContent(): JSX.Element {
   const location = useLocation();
@@ -30,13 +31,22 @@ function AppContent(): JSX.Element {
 
           <Route element={<ProtectedRoute />}>
             <Route path="/stages" element={<Stages />} />
+
             <Route
               path="/stages/status/:status"
               element={<StageListByStatus />}
             />
+
             <Route path="/etudiant" element={<Etudiant />} />
+
             <Route path="/mailsender" element={<MailSender />} />
+
             <Route path="/tuteurs" element={<TuteursPage />} />
+
+            <Route
+              path="/soutenances"
+              element={<SoutenancePage />}
+            />
           </Route>
         </Routes>
       </main>

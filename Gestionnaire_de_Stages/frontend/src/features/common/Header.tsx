@@ -48,7 +48,7 @@ function Header(): JSX.Element {
             <span>Email</span>
           </Link>
           <Link
-            to="/tuteurs"
+            to="/soutenances"
             className="flex items-center space-x-1 hover:opacity-90"
           >
             <Building2 size={18} />
