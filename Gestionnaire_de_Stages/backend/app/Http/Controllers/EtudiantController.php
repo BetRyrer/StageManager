@@ -7,44 +7,11 @@ use Illuminate\Http\Request;
 
 class EtudiantController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/etudiants",
-     *     summary="Liste tous les étudiants",
-     *     tags={"Etudiants"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Liste des étudiants"
-     *     )
-     * )
-     */
     public function index()
     {
         return Etudiant::with(['stage', 'tuteurs'])->get();
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/etudiants",
-     *     summary="Créer un étudiant",
-     *     tags={"Etudiants"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"nom","prenom","email","filiere","annee"},
-     *             @OA\Property(property="nom", type="string", example="Dupont"),
-     *             @OA\Property(property="prenom", type="string", example="Jean"),
-     *             @OA\Property(property="email", type="string", example="jean.dupont@example.com"),
-     *             @OA\Property(property="filiere", type="string", example="Informatique"),
-     *             @OA\Property(property="annee", type="string", example="BUT2")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Étudiant créé avec succès"
-     *     )
-     * )
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -58,106 +25,76 @@ class EtudiantController extends Controller
         return Etudiant::create($validated);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/etudiants/{id}",
-     *     summary="Afficher un étudiant",
-     *     tags={"Etudiants"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID de l'étudiant",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Étudiant trouvé"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Étudiant non trouvé"
-     *     )
-     * )
-     */
     public function show(Etudiant $etudiant)
     {
         return $etudiant->load(['stage', 'tuteurs']);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/etudiants/{id}",
-     *     summary="Mettre à jour un étudiant",
-     *     tags={"Etudiants"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID de l'étudiant",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="nom", type="string", example="Durand"),
-     *             @OA\Property(property="prenom", type="string", example="Paul"),
-     *             @OA\Property(property="email", type="string", example="paul.durand@example.com"),
-     *             @OA\Property(property="filiere", type="string", example="Maths"),
-     *             @OA\Property(property="annee", type="string", example="BUT3")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Étudiant mis à jour"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Étudiant non trouvé"
-     *     )
-     * )
-     */
-public function update(Request $request, Etudiant $etudiant)
-{
-    $validated = $request->validate([
-        'nom' => 'sometimes|required|string|max:255',
-        'prenom' => 'sometimes|required|string|max:255',
-        'email' => 'sometimes|required|email|unique:etudiants,email,' . $etudiant->id,
-        'filiere' => 'sometimes|required|string|max:255',
-        'annee' => 'sometimes|required|string|max:10',
-    ]);
+    public function update(Request $request, Etudiant $etudiant)
+    {
+        $validated = $request->validate([
+            'nom' => 'sometimes|required|string|max:255',
+            'prenom' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|unique:etudiants,email,' . $etudiant->id,
+            'filiere' => 'sometimes|required|string|max:255',
+            'annee' => 'sometimes|required|string|max:10',
+        ]);
 
-    $etudiant->update($validated);
+        $etudiant->update($validated);
 
-    return $etudiant;
-}
+        return $etudiant;
+    }
 
+    public function search(Request $request)
+    {
+        $search = $request->query('search');
 
-    /**
-     * @OA\Delete(
-     *     path="/api/etudiants/{id}",
-     *     summary="Supprimer un étudiant",
-     *     tags={"Etudiants"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID de l'étudiant",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="Étudiant supprimé"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Étudiant non trouvé"
-     *     )
-     * )
-     */
+        if (!$search) {
+            return response()->json([
+                'data' => [],
+            ]);
+        }
+
+        $etudiants = Etudiant::query()
+            ->with(['stage.tuteur'])
+            ->where('nom', 'like', "%{$search}%")
+            ->orWhere('prenom', 'like', "%{$search}%")
+            ->limit(10)
+            ->get()
+            ->map(function ($etudiant) {
+                $stage = $etudiant->stage;
+
+                return [
+                    'id' => $etudiant->id,
+                    'nom' => $etudiant->nom,
+                    'prenom' => $etudiant->prenom,
+                    'mail_universitaire' => $etudiant->mail_universitaire,
+
+                    'stage' => $stage ? [
+                        'id' => $stage->id,
+                        'titre_stage' => $stage->sujet,
+
+                        'maitre_stage' => $stage->tuteur
+                            ? trim(
+                                ($stage->tuteur->prenom ?? '') . ' ' .
+                                ($stage->tuteur->nom ?? '')
+                            )
+                            : null,
+
+                        'tuteur' => null,
+                    ] : null,
+                ];
+            });
+
+        return response()->json([
+            'data' => $etudiants,
+        ]);
+    }
+
     public function destroy(Etudiant $etudiant)
     {
         $etudiant->delete();
+
         return response()->noContent();
     }
 }
